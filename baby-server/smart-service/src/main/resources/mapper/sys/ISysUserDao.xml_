@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ISysUserMapper">
+
+
+
+
+    <insert id="save" parameterType="cn.smart.entity.SysUserDO">
+        insert into sys_user
+        (
+       	    user_id, user_name, password, salt, 
+       	    email, mobile, status, dept_id, 
+       	    create_time
+        )
+        values
+        (
+       	    #{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, 
+       	    #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{deptId,jdbcType=BIGINT}, 
+       	    #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.SysUserDO">
+        select
+                user_id, user_name, password, salt, 
+                email, mobile, status, dept_id, 
+                create_time
+        from sys_user
+        where user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.SysUserDO"
+        parameterType="cn.smart.condition.SysUserQueryCondition">
+        select
+       	    user_id, user_name, password, salt, 
+       	    email, mobile, status, dept_id, 
+       	    create_time
+        from sys_user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="salt != null">
+                and salt = #{salt,jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                and email = #{email,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="deptId != null">
+                and dept_id = #{deptId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by user_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.SysUserQueryCondition">
+        select count(1) as total from sys_user
+        <where>
+            <if test="userId != null">
+                 and user_id = #{userId,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null">
+                 and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                 and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="salt != null">
+                 and salt = #{salt,jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                 and email = #{email,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                 and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                 and status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="deptId != null">
+                 and dept_id = #{deptId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                 and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from sys_user
+    </select>
+
+
+    <update id="update" parameterType="cn.smart.entity.SysUserDO">
+        update sys_user
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null ">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="salt != null ">
+                salt = #{salt,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null ">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null ">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null  ">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="deptId != null ">
+                dept_id = #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null ">
+                create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from sys_user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="salt != null">
+                and salt = #{salt,jdbcType=VARCHAR}
+            </if>
+            <if test="email != null">
+                and email = #{email,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="deptId != null">
+                and dept_id = #{deptId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from sys_user where user_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from sys_user where user_id = #{userId,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ICasualUserMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.CasualUserDO">
+        insert into casual_user
+        (
+       	    `id`, `user_name`, `mobile_phone`, `age`, 
+       	    `create_time`, `update_time`, `source`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{source,jdbcType=INTEGER}
+                )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.CasualUserDO">
+        select
+                `id`, `user_name`, `mobile_phone`, `age`, 
+                `create_time`, `update_time`, `source`
+        from casual_user
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.CasualUserDO"
+        parameterType="cn.smart.condition.CasualUserQueryCondition">
+        select
+       	    `id`, `user_name`, `mobile_phone`, `age`, 
+       	    `create_time`, `update_time`, `source`
+        from casual_user
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and `user_name` like concat('%', '${userName}', '%')
+            </if>
+            <if test="mobilePhone != null and mobilePhone != '' ">
+                and `mobile_phone` like concat('%', '${mobilePhone}', '%')
+            </if>
+            <if test="age != null">
+                and `age` = #{age,jdbcType=INTEGER}
+            </if>
+            <if test="source != null">
+                and `source` = #{source,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.CasualUserQueryCondition">
+        select count(1) as total from casual_user
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and `user_name` like concat('%', '${userName}', '%')
+            </if>
+            <if test="mobilePhone != null and mobilePhone != '' ">
+                and `mobile_phone` like concat('%', '${mobilePhone}', '%')
+            </if>
+            <if test="age != null">
+                and `age` = #{age,jdbcType=INTEGER}
+            </if>
+            <if test="source != null">
+                and `source` = #{source,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from casual_user
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.CasualUserDO">
+        update casual_user
+        <set>
+            <if test="userName != null">
+                `user_name` = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="mobilePhone != null">
+                `mobile_phone` = #{mobilePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null">
+                `age` = #{age,jdbcType=INTEGER},
+            </if>
+            <if test="source != null">
+                `source` = #{source,jdbcType=INTEGER}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from casual_user
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and `user_name` = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobilePhone != null and mobilePhone != '' ">
+                and `mobile_phone` = #{mobilePhone,jdbcType=VARCHAR}
+            </if>
+            <if test="age != null">
+                and `age` = #{age,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from casual_user where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from casual_user where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

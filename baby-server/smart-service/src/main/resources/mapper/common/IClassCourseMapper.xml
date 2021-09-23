@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IClassCourseMapper">
+
+    <select id="queryClassByStageId" resultType="Long">
+        SELECT
+            cr.class_id
+        FROM
+            `class_course` cr
+            LEFT JOIN course_info ci ON cr.course_info_id = ci.id
+            LEFT JOIN course_stage cs ON cs.id = ci.stage_id
+        WHERE stage_id = #{stageId}
+        GROUP BY cr.class_id
+    </select>
+
+    <delete id="deleteByClassId" parameterType="Long">
+        delete from class_course where class_id = #{classId,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByCourseInfoId" parameterType="Long">
+        delete from class_course where course_info_id = #{courseInfoId,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByClassIdOrPersonIdsBatch" parameterType="cn.smart.bo.ClassInfoBO">
+        DELETE FROM class_person WHERE class_id = #{classId, jdbcType=BIGINT}
+        <if test="studentIds != null">
+            AND class_person.person_id in
+            <foreach item="ids" collection="studentIds" open="(" separator="," close=")">
+                #{ids}
+            </foreach>
+        </if>
+    </delete>
+
+    <insert id="saveBatch" parameterType="List">
+        INSERT INTO class_course (class_id, course_info_id, status, create_time) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (#{item.classId,jdbcType=BIGINT}, #{item.courseInfoId,jdbcType=BIGINT}, #{item.status,jdbcType=TINYINT}, #{item.createTime, jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.ClassCourseDO">
+        insert into class_course
+        (
+       	    id, class_id, course_info_id, start_time, 
+       	    end_time, status, create_time, update_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{classId,jdbcType=BIGINT}, #{courseInfoId,jdbcType=BIGINT}, #{startTime,jdbcType=TIMESTAMP}, 
+       	    #{endTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.ClassCourseDO">
+        select
+                id, class_id, course_info_id, start_time, 
+                end_time, status, create_time, update_time
+        from class_course
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.ClassCourseDO"
+        parameterType="cn.smart.condition.ClassCourseQueryCondition">
+        select
+            cc.id, cc.class_id, cc.course_info_id, cc.start_time,
+            cc.end_time, cc.status, cc.create_time, cc.update_time
+        from class_course cc
+        LEFT JOIN course_info ci ON ci.id = cc.course_info_id
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="classId != null">
+                and class_id = #{classId,jdbcType=BIGINT}
+            </if>
+            <if test="courseInfoId != null">
+                and course_info_id = #{courseInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="startTime != null">
+                and start_time = #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.ClassCourseQueryCondition">
+        select count(1) as total from class_course
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="classId != null">
+                and class_id = #{classId,jdbcType=BIGINT}
+            </if>
+            <if test="courseInfoId != null">
+                and course_info_id = #{courseInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="startTime != null">
+                and start_time = #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=TINYINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from class_course
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.ClassCourseDO">
+        update class_course
+        <set>
+            <if test="classId != null">
+                class_id = #{classId,jdbcType=BIGINT},
+            </if>
+            <if test="courseInfoId != null">
+                course_info_id = #{courseInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from class_course
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="classId != null">
+                and class_id = #{classId,jdbcType=BIGINT}
+            </if>
+            <if test="courseInfoId != null">
+                and course_info_id = #{courseInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=TINYINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from class_course where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from class_course where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+</mapper>

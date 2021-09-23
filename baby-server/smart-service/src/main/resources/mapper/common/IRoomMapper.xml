@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IRoomMapper">
+
+    <select id="queryRoomByPersonId" parameterType="Long" resultType="cn.smart.bo.RoomListBO">
+        SELECT
+               r.room_name,
+               r.id,
+               r.start_time,
+               r.end_time,
+               r.logo_url
+        FROM
+             class_person cp
+                 LEFT JOIN room r ON r.class_id = cp.class_id
+        WHERE cp.person_id = #{id, jdbcType=BIGINT}
+          AND r.id IS NOT NULL
+        ORDER BY r.start_time
+    </select>
+
+    <sql id="Base_Column_List">
+        r.`id`, r.`room_name`, r.`room_type`, r.`start_time`, 
+        r.`end_time`, r.`chairman_pwd`, r.`assistant_pwd`, r.`confuser_pwd`, 
+        r.`patrol_pwd`, r.`password_required`, r.`auto_open_av`, r.`video_type`, 
+        r.`confuser_url`, r.`teacher_url`, r.`video_frame_rate`, r.`confuser_num`, 
+        r.`class_id`, r.`logo_url`, r.`vcodec`, r.`create_time`
+    </sql>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.RoomDO">
+        insert into room
+        (
+       	    `id`, `room_name`, `room_type`, `start_time`, 
+       	    `end_time`, `chairman_pwd`, `assistant_pwd`, `confuser_pwd`, 
+       	    `patrol_pwd`, `password_required`, `auto_open_av`, `video_type`, 
+       	    `confuser_url`, `teacher_url`, `video_frame_rate`, `confuser_num`, 
+       	    `class_id`, `logo_url`, `vcodec`, `create_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{roomName,jdbcType=VARCHAR}, #{roomType,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, 
+       	    #{endTime,jdbcType=TIMESTAMP}, #{chairmanPwd,jdbcType=VARCHAR}, #{assistantPwd,jdbcType=VARCHAR}, #{confuserPwd,jdbcType=VARCHAR}, 
+       	    #{patrolPwd,jdbcType=VARCHAR}, #{passwordRequired,jdbcType=INTEGER}, #{autoOpenAv,jdbcType=INTEGER}, #{videoType,jdbcType=INTEGER}, 
+       	    #{confuserUrl,jdbcType=VARCHAR}, #{teacherUrl,jdbcType=VARCHAR}, #{videoFrameRate,jdbcType=INTEGER}, #{confuserNum,jdbcType=INTEGER}, 
+       	    #{classId,jdbcType=BIGINT}, #{logoUrl,jdbcType=VARCHAR}, #{vcodec,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.RoomDO">
+        insert into room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="roomName != null">
+                `room_name`,
+            </if>
+            <if test="roomType != null">
+                `room_type`,
+            </if>
+            <if test="startTime != null">
+                `start_time`,
+            </if>
+            <if test="endTime != null">
+                `end_time`,
+            </if>
+            <if test="chairmanPwd != null">
+                `chairman_pwd`,
+            </if>
+            <if test="assistantPwd != null">
+                `assistant_pwd`,
+            </if>
+            <if test="confuserPwd != null">
+                `confuser_pwd`,
+            </if>
+            <if test="patrolPwd != null">
+                `patrol_pwd`,
+            </if>
+            <if test="passwordRequired != null">
+                `password_required`,
+            </if>
+            <if test="autoOpenAv != null">
+                `auto_open_av`,
+            </if>
+            <if test="videoType != null">
+                `video_type`,
+            </if>
+            <if test="confuserUrl != null">
+                `confuser_url`,
+            </if>
+            <if test="teacherUrl != null">
+                `teacher_url`,
+            </if>
+            <if test="videoFrameRate != null">
+                `video_frame_rate`,
+            </if>
+            <if test="confuserNum != null">
+                `confuser_num`,
+            </if>
+            <if test="classId != null">
+                `class_id`,
+            </if>
+            <if test="logoUrl != null">
+                `logo_url`,
+            </if>
+            <if test="vcodec != null">
+                `vcodec`,
+            </if>
+            <if test="createTime != null">
+                `create_time`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT}, 
+            </if>
+            <if test="roomName != null">
+                #{roomName,jdbcType=VARCHAR}, 
+            </if>
+            <if test="roomType != null">
+                #{roomType,jdbcType=INTEGER}, 
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=TIMESTAMP}, 
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIMESTAMP}, 
+            </if>
+            <if test="chairmanPwd != null">
+                #{chairmanPwd,jdbcType=VARCHAR}, 
+            </if>
+            <if test="assistantPwd != null">
+                #{assistantPwd,jdbcType=VARCHAR}, 
+            </if>
+            <if test="confuserPwd != null">
+                #{confuserPwd,jdbcType=VARCHAR}, 
+            </if>
+            <if test="patrolPwd != null">
+                #{patrolPwd,jdbcType=VARCHAR}, 
+            </if>
+            <if test="passwordRequired != null">
+                #{passwordRequired,jdbcType=INTEGER}, 
+            </if>
+            <if test="autoOpenAv != null">
+                #{autoOpenAv,jdbcType=INTEGER}, 
+            </if>
+            <if test="videoType != null">
+                #{videoType,jdbcType=INTEGER}, 
+            </if>
+            <if test="confuserUrl != null">
+                #{confuserUrl,jdbcType=VARCHAR}, 
+            </if>
+            <if test="teacherUrl != null">
+                #{teacherUrl,jdbcType=VARCHAR}, 
+            </if>
+            <if test="videoFrameRate != null">
+                #{videoFrameRate,jdbcType=INTEGER}, 
+            </if>
+            <if test="confuserNum != null">
+                #{confuserNum,jdbcType=INTEGER}, 
+            </if>
+            <if test="classId != null">
+                #{classId,jdbcType=BIGINT}, 
+            </if>
+            <if test="logoUrl != null">
+                #{logoUrl,jdbcType=VARCHAR}, 
+            </if>
+            <if test="vcodec != null">
+                #{vcodec,jdbcType=INTEGER}, 
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="saveBatch" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO room
+        (
+            `id`, `room_name`, `room_type`, `start_time`, 
+            `end_time`, `chairman_pwd`, `assistant_pwd`, `confuser_pwd`, 
+            `patrol_pwd`, `password_required`, `auto_open_av`, `video_type`, 
+            `confuser_url`, `teacher_url`, `video_frame_rate`, `confuser_num`, 
+            `class_id`, `logo_url`, `vcodec`, `create_time`
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+        (
+            #{item.id,jdbcType=BIGINT}, #{item.roomName,jdbcType=VARCHAR}, #{item.roomType,jdbcType=INTEGER}, #{item.startTime,jdbcType=TIMESTAMP}, 
+            #{item.endTime,jdbcType=TIMESTAMP}, #{item.chairmanPwd,jdbcType=VARCHAR}, #{item.assistantPwd,jdbcType=VARCHAR}, #{item.confuserPwd,jdbcType=VARCHAR}, 
+            #{item.patrolPwd,jdbcType=VARCHAR}, #{item.passwordRequired,jdbcType=INTEGER}, #{item.autoOpenAv,jdbcType=INTEGER}, #{item.videoType,jdbcType=INTEGER}, 
+            #{item.confuserUrl,jdbcType=VARCHAR}, #{item.teacherUrl,jdbcType=VARCHAR}, #{item.videoFrameRate,jdbcType=INTEGER}, #{item.confuserNum,jdbcType=INTEGER}, 
+            #{item.classId,jdbcType=BIGINT}, #{item.logoUrl,jdbcType=VARCHAR}, #{item.vcodec,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP}
+        )
+        </foreach>
+    </insert>
+
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.RoomDO">
+        select
+            <include refid="Base_Column_List" />
+        from room r
+        where r.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.RoomDO"
+        parameterType="cn.smart.condition.RoomQueryCondition">
+        select
+            ci.class_name,
+            <include refid="Base_Column_List" />
+        from room r
+        left join class_info ci on ci.id = r.class_id
+        <where>
+            <if test="id != null">
+                and r.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="roomName != null and roomName != ''">
+                and r.`room_name` = #{roomName,jdbcType=VARCHAR}
+            </if>
+            <if test="roomType != null">
+                and r.`room_type` = #{roomType,jdbcType=INTEGER}
+            </if>
+            <if test="startTime != null">
+                and r.`start_time` = #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and r.`end_time` = #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="chairmanPwd != null and chairmanPwd != ''">
+                and r.`chairman_pwd` = #{chairmanPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="assistantPwd != null and assistantPwd != ''">
+                and r.`assistant_pwd` = #{assistantPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="confuserPwd != null and confuserPwd != ''">
+                and r.`confuser_pwd` = #{confuserPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="patrolPwd != null and patrolPwd != ''">
+                and r.`patrol_pwd` = #{patrolPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="passwordRequired != null">
+                and r.`password_required` = #{passwordRequired,jdbcType=INTEGER}
+            </if>
+            <if test="autoOpenAv != null">
+                and r.`auto_open_av` = #{autoOpenAv,jdbcType=INTEGER}
+            </if>
+            <if test="videoType != null">
+                and r.`video_type` = #{videoType,jdbcType=INTEGER}
+            </if>
+            <if test="confuserUrl != null and confuserUrl != ''">
+                and r.`confuser_url` = #{confuserUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="teacherUrl != null and teacherUrl != ''">
+                and r.`teacher_url` = #{teacherUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoFrameRate != null">
+                and r.`video_frame_rate` = #{videoFrameRate,jdbcType=INTEGER}
+            </if>
+            <if test="confuserNum != null">
+                and r.`confuser_num` = #{confuserNum,jdbcType=INTEGER}
+            </if>
+            <if test="classId != null">
+                and r.`class_id` = #{classId,jdbcType=BIGINT}
+            </if>
+            <if test="logoUrl != null and logoUrl != ''">
+                and r.`logo_url` = #{logoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="vcodec != null">
+                and r.`vcodec` = #{vcodec,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                and r.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by r.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.RoomQueryCondition">
+        select count(1) as total from room r
+        <where>
+            <if test="id != null">
+                and r.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="roomName != null and roomName != '' ">
+                and r.`room_name` = #{roomName,jdbcType=VARCHAR}
+            </if>
+            <if test="roomType != null">
+                and r.`room_type` = #{roomType,jdbcType=INTEGER}
+            </if>
+            <if test="startTime != null">
+                and r.`start_time` = #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and r.`end_time` = #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="chairmanPwd != null and chairmanPwd != '' ">
+                and r.`chairman_pwd` = #{chairmanPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="assistantPwd != null and assistantPwd != '' ">
+                and r.`assistant_pwd` = #{assistantPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="confuserPwd != null and confuserPwd != '' ">
+                and r.`confuser_pwd` = #{confuserPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="patrolPwd != null and patrolPwd != '' ">
+                and r.`patrol_pwd` = #{patrolPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="passwordRequired != null">
+                and r.`password_required` = #{passwordRequired,jdbcType=INTEGER}
+            </if>
+            <if test="autoOpenAv != null">
+                and r.`auto_open_av` = #{autoOpenAv,jdbcType=INTEGER}
+            </if>
+            <if test="videoType != null">
+                and r.`video_type` = #{videoType,jdbcType=INTEGER}
+            </if>
+            <if test="confuserUrl != null and confuserUrl != '' ">
+                and r.`confuser_url` = #{confuserUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="teacherUrl != null and teacherUrl != '' ">
+                and r.`teacher_url` = #{teacherUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoFrameRate != null">
+                and r.`video_frame_rate` = #{videoFrameRate,jdbcType=INTEGER}
+            </if>
+            <if test="confuserNum != null">
+                and r.`confuser_num` = #{confuserNum,jdbcType=INTEGER}
+            </if>
+            <if test="classId != null">
+                and r.`class_id` = #{classId,jdbcType=BIGINT}
+            </if>
+            <if test="logoUrl != null and logoUrl != '' ">
+                and r.`logo_url` = #{logoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="vcodec != null">
+                and r.`vcodec` = #{vcodec,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from room r
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.RoomDO">
+        update room r
+        <set>
+            <if test="roomName != null">
+                r.`room_name` = #{roomName,jdbcType=VARCHAR},
+            </if>
+            <if test="roomType != null">
+                r.`room_type` = #{roomType,jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                r.`start_time` = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                r.`end_time` = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="chairmanPwd != null">
+                r.`chairman_pwd` = #{chairmanPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="assistantPwd != null">
+                r.`assistant_pwd` = #{assistantPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="confuserPwd != null">
+                r.`confuser_pwd` = #{confuserPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="patrolPwd != null">
+                r.`patrol_pwd` = #{patrolPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="passwordRequired != null">
+                r.`password_required` = #{passwordRequired,jdbcType=INTEGER},
+            </if>
+            <if test="autoOpenAv != null">
+                r.`auto_open_av` = #{autoOpenAv,jdbcType=INTEGER},
+            </if>
+            <if test="videoType != null">
+                r.`video_type` = #{videoType,jdbcType=INTEGER},
+            </if>
+            <if test="confuserUrl != null">
+                r.`confuser_url` = #{confuserUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherUrl != null">
+                r.`teacher_url` = #{teacherUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="videoFrameRate != null">
+                r.`video_frame_rate` = #{videoFrameRate,jdbcType=INTEGER},
+            </if>
+            <if test="confuserNum != null">
+                r.`confuser_num` = #{confuserNum,jdbcType=INTEGER},
+            </if>
+            <if test="classId != null">
+                r.`class_id` = #{classId,jdbcType=BIGINT},
+            </if>
+            <if test="logoUrl != null">
+                r.`logo_url` = #{logoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="vcodec != null">
+                r.`vcodec` = #{vcodec,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                r.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.RoomDO">
+        update room r SET
+            r.`room_name` = #{roomName,jdbcType=VARCHAR},
+            r.`room_type` = #{roomType,jdbcType=INTEGER},
+            r.`start_time` = #{startTime,jdbcType=TIMESTAMP},
+            r.`end_time` = #{endTime,jdbcType=TIMESTAMP},
+            r.`chairman_pwd` = #{chairmanPwd,jdbcType=VARCHAR},
+            r.`assistant_pwd` = #{assistantPwd,jdbcType=VARCHAR},
+            r.`confuser_pwd` = #{confuserPwd,jdbcType=VARCHAR},
+            r.`patrol_pwd` = #{patrolPwd,jdbcType=VARCHAR},
+            r.`password_required` = #{passwordRequired,jdbcType=INTEGER},
+            r.`auto_open_av` = #{autoOpenAv,jdbcType=INTEGER},
+            r.`video_type` = #{videoType,jdbcType=INTEGER},
+            r.`confuser_url` = #{confuserUrl,jdbcType=VARCHAR},
+            r.`teacher_url` = #{teacherUrl,jdbcType=VARCHAR},
+            r.`video_frame_rate` = #{videoFrameRate,jdbcType=INTEGER},
+            r.`confuser_num` = #{confuserNum,jdbcType=INTEGER},
+            r.`class_id` = #{classId,jdbcType=BIGINT},
+            r.`logo_url` = #{logoUrl,jdbcType=VARCHAR},
+            r.`vcodec` = #{vcodec,jdbcType=INTEGER},
+            r.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+        where r.`id` = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from room
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="roomName != null and roomName != '' ">
+                and `room_name` = #{roomName,jdbcType=VARCHAR}
+            </if>
+            <if test="roomType != null">
+                and `room_type` = #{roomType,jdbcType=INTEGER}
+            </if>
+            <if test="chairmanPwd != null and chairmanPwd != '' ">
+                and `chairman_pwd` = #{chairmanPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="assistantPwd != null and assistantPwd != '' ">
+                and `assistant_pwd` = #{assistantPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="confuserPwd != null and confuserPwd != '' ">
+                and `confuser_pwd` = #{confuserPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="patrolPwd != null and patrolPwd != '' ">
+                and `patrol_pwd` = #{patrolPwd,jdbcType=VARCHAR}
+            </if>
+            <if test="passwordRequired != null">
+                and `password_required` = #{passwordRequired,jdbcType=INTEGER}
+            </if>
+            <if test="autoOpenAv != null">
+                and `auto_open_av` = #{autoOpenAv,jdbcType=INTEGER}
+            </if>
+            <if test="videoType != null">
+                and `video_type` = #{videoType,jdbcType=INTEGER}
+            </if>
+            <if test="confuserUrl != null and confuserUrl != '' ">
+                and `confuser_url` = #{confuserUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="teacherUrl != null and teacherUrl != '' ">
+                and `teacher_url` = #{teacherUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoFrameRate != null">
+                and `video_frame_rate` = #{videoFrameRate,jdbcType=INTEGER}
+            </if>
+            <if test="confuserNum != null">
+                and `confuser_num` = #{confuserNum,jdbcType=INTEGER}
+            </if>
+            <if test="classId != null">
+                and `class_id` = #{classId,jdbcType=BIGINT}
+            </if>
+            <if test="logoUrl != null and logoUrl != '' ">
+                and `logo_url` = #{logoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="vcodec != null">
+                and `vcodec` = #{vcodec,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from room where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from room where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

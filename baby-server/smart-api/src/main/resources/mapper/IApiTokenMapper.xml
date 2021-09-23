@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IApiTokenMapper">
+
+    <insert id="save" parameterType="cn.smart.entity.ApiTokenDO">
+        insert into api_token
+        (
+       	    id, person_id, token, type, 
+       	    expire_time, update_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{personId,jdbcType=BIGINT}, #{token,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+       	    #{expireTime,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.ApiTokenDO">
+        select
+                id, person_id, token, type, 
+                expire_time, update_time
+        from api_token
+        where person_id = #{personId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.ApiTokenDO"
+        parameterType="cn.smart.condition.ApiTokenQueryCondition">
+        select
+       	    id, person_id, token, type, 
+       	    expire_time, update_time
+        from api_token
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="token != null">
+                and token = #{token,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="expireTime != null">
+                and expire_time = #{expireTime,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by person_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.ApiTokenQueryCondition">
+        select count(1) as total from api_token
+        <where>
+            <if test="id != null">
+                 and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                 and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="token != null">
+                 and token = #{token,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                 and type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="expireTime != null">
+                 and expire_time = #{expireTime,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from api_token
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.ApiTokenDO">
+        update api_token
+        <set>
+             <if test="token != null">
+                 token = #{token,jdbcType=VARCHAR},
+             </if>
+             <if test="expireTime != null">
+                 expire_time = #{expireTime,jdbcType=BIGINT},
+             </if>
+             <if test="updateTime != null">
+                 update_time = #{updateTime,jdbcType=TIMESTAMP}
+             </if>
+        </set>
+        where person_id = #{personId,jdbcType=BIGINT}
+        and type = #{type,jdbcType=INTEGER}
+    </update>
+
+    <delete id="delete">
+        delete from api_token
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="token != null">
+                and token = #{token,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="expireTime != null">
+                and expire_time = #{expireTime,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from api_token where person_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from api_token where person_id = #{personId,jdbcType=BIGINT}
+    </delete>
+</mapper>

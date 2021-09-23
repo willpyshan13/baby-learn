@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+  <display-name>ShipScheduleServer</display-name>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:applicationContext-spring.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>dispatcher</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:mvc.xml</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+
+  <!-- 跨域配置 -->
+  <filter>
+    <description>跨域过滤器</description>
+    <filter-name>simpleCORSFilter</filter-name>
+    <filter-class>cn.smart.common.filter.SimpleCORSFilter</filter-class>
+    <init-param>
+      <param-name>allowOrigin</param-name>
+      <param-value>request.getHeader("Origin")</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowMethods</param-name>
+      <param-value>GET, POST, HEAD, PUT, DELETE, OPTIONS</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowHeaders</param-name>
+      <param-value>x-requested-with, token, Content-Type</param-value>
+      <!--<param-value>Accept, Origin, X-Requested-With, Content-Type, Last-Modified, userId, token</param-value>-->
+    </init-param>
+    <init-param>
+      <param-name>allowCredentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>simpleCORSFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!--跨域配置 end-->
+
+  <!-- The filter-name matches name of a 'shiroFilter' bean inside applicationContext.xml -->
+  <filter>
+    <filter-name>shiroFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+      <param-name>targetFilterLifecycle</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <!-- Make sure any request you want accessible to Shiro is filtered. /*
+      catches all -->
+  <!-- requests. Usually this filter mapping is defined first (before all
+      others) to -->
+  <!-- ensure that Shiro works in subsequent filters in the filter chain: -->
+  <filter-mapping>
+    <filter-name>shiroFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!--
+  <filter>
+      <filter-name>sitemesh</filter-name>
+      <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
+  </filter>
+  <filter-mapping>
+      <filter-name>sitemesh</filter-name>
+      <url-pattern>/*</url-pattern>
+  </filter-mapping>
+   -->
+
+  <!-- 配置编码过滤器 -->
+  <filter>
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>
+      org.springframework.web.filter.CharacterEncodingFilter
+    </filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+
+
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/404.jsp</location>
+  </error-page>
+
+  <!--
+  <error-page>
+      <error-code>404</error-code>
+      <location>/WEB-INF/jsp/error.jsp</location>
+  </error-page>
+
+  <error-page>
+      <error-code>500</error-code>
+      <location>/500</location>
+  </error-page>
+   -->
+  <!-- 未捕获的错误，同样可指定其它异常类，或自定义异常类 -->
+  <!--<error-page>-->
+  <!--<exception-type>java.lang.Exception</exception-type>-->
+  <!--<location>/uncaughtException</location>-->
+  <!--</error-page>-->
+</web-app>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <import resource="classpath*:applicationContext-mybatis.xml"/>
+
+    <!-- 定时任务配置 start -->
+    <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="apiScheduler"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContextKey"/>
+        <property name="dataSource" ref="mybatisDataSource"/>
+        <property name="configLocation" value="classpath:spring-quartz.properties"/>
+
+        <!-- 可选，QuartzScheduler 启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了 -->
+        <!--<property name="overwriteExistingJobs" value="true" />-->
+        <!-- 必须的，QuartzScheduler 延时启动，应用启动完后 QuartzScheduler 再启动  -->
+        <property name="startupDelay" value="2"/>
+        <!-- 设置自动启动  -->
+        <property name="autoStartup" value="true"/>
+    </bean>
+
+    <!-- 监听 -->
+    <bean id="jobListener" class="cn.smart.support.scheduler.JobListener"/>
+
+    <!-- 业务操作 -->
+    <bean id="schedulerService" class="cn.smart.support.scheduler.SchedulerServiceImpl"/>
+
+    <!-- 调度管理 -->
+    <bean id="scheduler" class="cn.smart.support.scheduler.SchedulerManager">
+        <property name="scheduler" ref="schedulerFactory"/>
+        <property name="listJobListener" ref="jobListener"/>
+    </bean>
+
+    <!--<bean id="pushService" class="cn.smart.service.impl.PushServiceImpl"/>-->
+    <!--&lt;!&ndash;   &ndash;&gt;-->
+    <!--<bean id="pushJob" class="cn.smart.support.scheduler.job.MessageJob">-->
+        <!--<property name="pushService" ref="pushService"/>-->
+    <!--</bean>-->
+
+</beans>

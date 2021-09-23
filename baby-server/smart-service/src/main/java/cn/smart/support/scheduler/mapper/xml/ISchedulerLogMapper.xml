@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.support.scheduler.mapper.ISchedulerLogMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.smart.support.scheduler.entity.SchedulerLog">
+        insert into scheduler_log
+        (
+         group_name, task_name, start_time, end_time,
+         status_, server_host, server_duid, fire_info,
+         target_id
+        )
+        values
+        (
+          #{groupName,jdbcType=VARCHAR}, #{taskName,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+          #{status,jdbcType=VARCHAR},#{serverHost,jdbcType=VARCHAR},#{serverDuid,jdbcType=VARCHAR},#{fireInfo,jdbcType=VARCHAR},
+          #{targetId, jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="queryList" parameterType="cn.smart.support.scheduler.entity.SchedulerLogQueryCondition"
+            resultType="cn.smart.support.scheduler.entity.SchedulerLog">
+        SELECT
+            id_,
+            group_name, task_name, start_time, end_time,
+            status_, server_host, server_duid, fire_info,
+            target_id
+        FROM scheduler_log
+        <where>
+            <if test="groupName != null">
+                and group_name = #{groupName, jdbcType=VARCHAR}
+            </if>
+            <if test="taskName != null">
+                and task_name = #{taskName, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status_ = #{status, jdbcType=VARCHAR}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id_ desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" parameterType="cn.smart.support.scheduler.entity.SchedulerLogQueryCondition"
+            resultType="int">
+        SELECT count(*)
+        FROM scheduler_log
+        <where>
+            <if test="groupName != null">
+                and group_name = #{groupName, jdbcType=VARCHAR}
+            </if>
+            <if test="taskName != null">
+                and task_name = #{taskName, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status_ = #{status, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <update id="update" parameterType="cn.smart.support.scheduler.entity.SchedulerLog">
+        update scheduler_log
+        <set>
+            <if test="groupName != null">
+                group_name = #{groupName,jdbcType=VARCHAR},
+            </if>
+            <if test="taskName != null">
+                task_name = #{taskName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status_ = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serverHost != null">
+                server_host = #{serverHost,jdbcType=VARCHAR},
+            </if>
+            <if test="serverDuid != null">
+                server_duid = #{serverDuid,jdbcType=VARCHAR},
+            </if>
+            <if test="fireInfo != null">
+                fire_info = #{fireInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="targetId != null">
+                target_id = #{targetId,jdbcType=BIGINT}
+            </if>
+        </set>
+        where id_ = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM scheduler_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </delete>
+
+</mapper>

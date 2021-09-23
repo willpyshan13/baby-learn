@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IUsageLogMapper">
+
+
+    <insert id="saveBatch" parameterType="List">
+        INSERT INTO usage_log (`name`, `type`, `user_id`,
+        `start_time`, `end_time`, `duration`, `create_time`, event_type, number) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (#{item.name,jdbcType=VARCHAR}, #{item.type,jdbcType=INTEGER}, #{item.userId,jdbcType=BIGINT},
+            #{item.startTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.duration,jdbcType=BIGINT},
+            now(),
+            #{item.eventType,jdbcType=INTEGER}, #{item.number,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.smart.entity.UsageLogDO">
+        INSERT INTO usage_log
+        (
+            `id`, `name`, `type`, `user_id`,
+            `start_time`, `end_time`, `duration`, `create_time`, event_type, number
+        )
+        VALUES
+        (
+            #{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT},
+            #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{duration,jdbcType=BIGINT},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{eventType,jdbcType=INTEGER}, #{number,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Integer" resultType="cn.smart.entity.UsageLogDO">
+        SELECT
+            `id`,
+            `name`,
+            `type`,
+            `user_id`,
+            `start_time`,
+            `end_time`,
+            `duration`,
+            `create_time`,
+            event_type,
+            number
+        FROM usage_log
+        WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.UsageLogDO"
+            parameterType="cn.smart.condition.UsageLogQueryCondition">
+        select
+        ul.`id`, ul.`name`, ul.`type`, ul.`user_id`,
+        ul.`start_time`, ul.`end_time`, ul.`duration`, ul.`create_time`, event_type, number,
+        p.user_name
+        from usage_log ul
+        LEFT JOIN person p ON p.person_id = ul.user_id
+        <where>
+            <if test="id != null">
+                and ul.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="name != null and name != '' ">
+                and ul.`name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and ul.`type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and ul.`user_id` = #{userId,jdbcType=BIGINT}
+            </if>
+            <if test="startTime != null">
+                and ul.`start_time` &gt;= #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and ul.`end_time` &lt;= #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="duration != null">
+                and ul.`duration` = #{duration,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and ul.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="eventType != null">
+                and ul.`event_type` = #{eventType,jdbcType=INTEGER}
+            </if>
+            <if test="number != null">
+                and ul.`number` = #{number,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null">
+                and p.user_name like CONCAT('%','${userName}','%')
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ul.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by ul.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+            parameterType="cn.smart.condition.UsageLogQueryCondition">
+        select count(1) as total
+        from usage_log ul
+        LEFT JOIN person p ON p.person_id = ul.user_id
+        <where>
+            <if test="id != null">
+                and ul.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="name != null and name != '' ">
+                and ul.`name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and ul.`type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and ul.`user_id` = #{userId,jdbcType=BIGINT}
+            </if>
+            <if test="startTime != null">
+                and ul.`start_time` = #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and ul.`end_time` = #{endTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="duration != null">
+                and ul.`duration` = #{duration,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and ul.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="eventType != null">
+                and ul.`event_type` = #{eventType,jdbcType=INTEGER}
+            </if>
+            <if test="number != null">
+                and ul.`number` = #{number,jdbcType=BIGINT}
+            </if>
+            <if test="userName != null">
+                and p.user_name like CONCAT('%','${userName}','%')
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        SELECT count(1) AS total
+        FROM usage_log
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.UsageLogDO">
+        update usage_log
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                `user_id` = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="startTime != null">
+                `start_time` = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                `end_time` = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="duration != null">
+                `duration` = #{duration,jdbcType=BIGINT},
+            </if>
+            <if test="eventType != null">
+                `event_type` = #{eventType,jdbcType=INTEGER}
+            </if>
+            <if test="number != null">
+                `number` = #{number,jdbcType=BIGINT}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="delete">
+        delete from usage_log
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and `user_id` = #{userId,jdbcType=BIGINT}
+            </if>
+            <if test="duration != null">
+                and `duration` = #{duration,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from usage_log where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Integer">
+        DELETE FROM usage_log
+        WHERE id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

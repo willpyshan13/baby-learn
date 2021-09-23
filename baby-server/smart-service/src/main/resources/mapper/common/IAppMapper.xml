@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IAppMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="appId" parameterType="cn.smart.entity.AppDO">
+        insert into app
+        (
+        app_id, app_type, path, update_time,
+        version_desc, version_name, version_code
+        )
+        values
+        (
+        #{appId,jdbcType=BIGINT}, #{appType,jdbcType=INTEGER}, #{path,jdbcType=VARCHAR}, #{updateTime,jdbcType=VARCHAR},
+        #{versionDesc,jdbcType=VARCHAR}, #{versionName,jdbcType=VARCHAR}, #{versionCode,jdbcType=DOUBLE}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.AppDO">
+        select
+        app_id, app_type, path, update_time,
+        version_desc, version_name, version_code, white
+        from app
+        where app_id = #{appId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.AppDO"
+            parameterType="cn.smart.condition.AppQueryCondition">
+        select
+        app_id, app_type, path, update_time,
+        version_desc, version_name, version_code, white
+        from app
+        <where>
+            <if test="appId != null">
+                and app_id = #{appId,jdbcType=BIGINT}
+            </if>
+            <if test="appType != null">
+                and app_type = #{appType,jdbcType=INTEGER}
+            </if>
+            <if test="path != null and path != '' ">
+                and path = #{path,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null and updateTime != '' ">
+                and update_time = #{updateTime,jdbcType=VARCHAR}
+            </if>
+            <if test="versionDesc != null and versionDesc != '' ">
+                and version_desc = #{versionDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="versionName != null and versionName != '' ">
+                and version_name = #{versionName,jdbcType=VARCHAR}
+            </if>
+            <if test="versionCode != null">
+                and version_code = #{versionCode,jdbcType=DOUBLE}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by app_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+            parameterType="cn.smart.condition.AppQueryCondition">
+        select count(1) as total from app
+        <where>
+            <if test="appId != null">
+                and app_id = #{appId,jdbcType=BIGINT}
+            </if>
+            <if test="appType != null">
+                and app_type = #{appType,jdbcType=INTEGER}
+            </if>
+            <if test="path != null and path != '' ">
+                and path = #{path,jdbcType=VARCHAR}
+            </if>
+            <if test="versionDesc != null and versionDesc != '' ">
+                and version_desc = #{versionDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="versionName != null and versionName != '' ">
+                and version_name = #{versionName,jdbcType=VARCHAR}
+            </if>
+            <if test="versionCode != null">
+                and version_code = #{versionCode,jdbcType=DOUBLE}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from app
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.AppDO">
+        update app
+        <set>
+            <if test="appType != null">
+                app_type = #{appType,jdbcType=INTEGER},
+            </if>
+            <if test="path != null">
+                path = #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="versionDesc != null">
+                version_desc = #{versionDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="versionName != null">
+                version_name = #{versionName,jdbcType=VARCHAR},
+            </if>
+            <if test="versionCode != null">
+                version_code = #{versionCode,jdbcType=DOUBLE},
+            </if>
+            <if test="white != null">
+                white = #{white, jdbcType=INTEGER}
+            </if>
+        </set>
+        where app_id = #{appId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from app
+        <where>
+            <if test="appId != null">
+                and app_id = #{appId,jdbcType=BIGINT}
+            </if>
+            <if test="appType != null">
+                and app_type = #{appType,jdbcType=INTEGER}
+            </if>
+            <if test="path != null and path != '' ">
+                and path = #{path,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null and updateTime != '' ">
+                and update_time = #{updateTime,jdbcType=VARCHAR}
+            </if>
+            <if test="versionDesc != null and versionDesc != '' ">
+                and version_desc = #{versionDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="versionName != null and versionName != '' ">
+                and version_name = #{versionName,jdbcType=VARCHAR}
+            </if>
+            <if test="versionCode != null">
+                and version_code = #{versionCode,jdbcType=DOUBLE}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from app where app_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from app where app_id = #{appId,jdbcType=BIGINT}
+    </delete>
+</mapper>

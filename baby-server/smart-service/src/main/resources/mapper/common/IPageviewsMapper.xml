@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IPageviewsMapper">
+
+    <select id="queryViewsGroupByCreateDay" resultType="map" parameterType="cn.smart.condition.PageviewsQueryCondition">
+        SELECT DATE_FORMAT(create_time,'%Y-%m-%d' ) create_day, count(*) total FROM `pageviews`
+        <where>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="channel != null">
+                and `channel` = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="startDay != null and endDay != null">
+                and date_format( create_time, '%Y-%m-%d' ) BETWEEN #{startDay} AND #{endDay}
+            </if>
+        </where>
+        GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d' )
+    </select>
+    
+    <select id="countRegistered" resultType="map" parameterType="cn.smart.condition.PageviewsQueryCondition">
+        SELECT
+            count(*) AS total,
+            date_format( create_time, '%Y-%m-%d' ) create_day
+        FROM
+            person
+        <where>
+            <if test="startDay != null and endDay != null">
+                and date_format( create_time, '%Y-%m-%d' ) BETWEEN #{startDay} AND #{endDay}
+            </if>
+        </where>
+        GROUP BY
+            DATE_FORMAT(create_time,'%Y-%m-%d' )
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.PageviewsDO">
+        insert into pageviews
+        (
+       	    `id`, `url`, `type`, `serial_number`, 
+       	    `channel`, `person_id`, `create_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{serialNumber,jdbcType=VARCHAR}, 
+       	    #{channel,jdbcType=INTEGER}, #{personId,jdbcType=BIGINT}, #{createTime,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Integer" resultType="cn.smart.entity.PageviewsDO">
+        select
+                `id`, `url`, `type`, `serial_number`, 
+                `channel`, `person_id`, `create_time`
+        from pageviews
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.PageviewsDO"
+        parameterType="cn.smart.condition.PageviewsQueryCondition">
+        select
+       	    `id`, `url`, `type`, `serial_number`, 
+       	    `channel`, `person_id`, `create_time`
+        from pageviews
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="url != null and url != '' ">
+                and `url` = #{url,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="serialNumber != null and serialNumber != '' ">
+                and `serial_number` = #{serialNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="channel != null">
+                and `channel` = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null and createTime != '' ">
+                and `create_time` = #{createTime,jdbcType=VARCHAR}
+            </if>
+            <if test="createDay != null and createDay != '' ">
+                and DATE_FORMAT(create_time,'%Y-%m-%d' ) = #{createDay}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.PageviewsQueryCondition">
+        select count(1) as total from pageviews
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="url != null and url != '' ">
+                and `url` = #{url,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="serialNumber != null and serialNumber != '' ">
+                and `serial_number` = #{serialNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="channel != null">
+                and `channel` = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from pageviews
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.PageviewsDO">
+        update pageviews
+        <set>
+            <if test="url != null">
+                `url` = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="serialNumber != null">
+                `serial_number` = #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="channel != null">
+                `channel` = #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="personId != null">
+                `person_id` = #{personId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="delete">
+        delete from pageviews
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="url != null and url != '' ">
+                and `url` = #{url,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="serialNumber != null and serialNumber != '' ">
+                and `serial_number` = #{serialNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="channel != null">
+                and `channel` = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null and createTime != '' ">
+                and `create_time` = #{createTime,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from pageviews where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Integer">
+        delete from pageviews where id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

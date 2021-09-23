@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <!-- 日志文件名 -->
+        <Property name="fileName">smart-server.log</Property>
+        <!-- 日志存放目录 -->
+        <!--<Property name="baseDir">/opt/smart/logs</Property>-->
+        <!--<Property name="baseDir">/home/log/smart-api/</Property>-->
+        <Property name="baseDir">/home/log/smart-api/</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </Console>
+
+        <RollingFile name="RollingFile" fileName="${baseDir}/smart-server.log"
+                     filePattern="${baseDir}/%d{yyyy-MM}/%d{yyyy-MM-dd}-smart-server-%i.log.gz"> <!-- 归档存储目录 -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/> <!-- 每天生成一份日志 -->
+                <SizeBasedTriggeringPolicy size="50MB"/> <!-- 单份日志最大值 -->
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${baseDir}" maxDepth="2"> <!-- 文件目录深度 -->
+                    <IfFileName glob="*/*-smart-server-*.log.gz"/> <!--删除 格式满足 smart-server-*.log.gz 且超过60天或更早的文件 -->
+                    <IfLastModified age="180d"/> <!-- 删除指定时间之前的日志文件 180d -->
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+    </Appenders>
+    <Loggers>
+        <logger name="cn.smart.server.module.*.dao" level="DEBUG"
+                additivity="false">    <!-- name中的值为mybatis的DAO层接口包路径 -->
+            <appender-ref ref="Console"/>
+        </logger>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

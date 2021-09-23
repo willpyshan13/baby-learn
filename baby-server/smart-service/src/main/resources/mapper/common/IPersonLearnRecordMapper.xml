@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IPersonLearnRecordMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="recordId" parameterType="cn.smart.entity.PersonLearnRecordDO">
+        insert into person_learn_record
+        (
+       	    `record_id`, `course_id`, `person_id`, `type`, 
+       	    `result_data`, `score`, `create_time`, `update_time`
+        )
+        values
+        (
+       	    #{recordId,jdbcType=BIGINT}, #{courseId,jdbcType=BIGINT}, #{personId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, 
+       	    #{resultData,jdbcType=VARCHAR}, #{score,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.PersonLearnRecordDO">
+        select
+                `record_id`, `course_id`, `person_id`, `type`, 
+                `result_data`, `score`, `create_time`, `update_time`
+        from person_learn_record
+        where record_id = #{recordId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.PersonLearnRecordDO"
+        parameterType="cn.smart.condition.PersonLearnRecordQueryCondition">
+        select
+       	    `record_id`, `course_id`, `person_id`, `type`, 
+       	    `result_data`, `score`, `create_time`, `update_time`
+        from person_learn_record
+        <where>
+            <if test="recordId != null">
+                and `record_id` = #{recordId,jdbcType=BIGINT}
+            </if>
+            <if test="courseId != null">
+                and `course_id` = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="inCourseIds != null">
+                AND `course_id` in
+                <foreach item="ids" collection="inCourseIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="resultData != null and resultData != '' ">
+                and `result_data` = #{resultData,jdbcType=VARCHAR}
+            </if>
+            <if test="score != null">
+                and `score` = #{score,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="startTime != null">
+                and `update_time` &gt;= #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and `update_time` &lt;= #{endTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by record_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.PersonLearnRecordQueryCondition">
+        select count(1) as total from person_learn_record
+        <where>
+            <if test="recordId != null">
+                and `record_id` = #{recordId,jdbcType=BIGINT}
+            </if>
+            <if test="courseId != null">
+                and `course_id` = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="inCourseIds != null">
+                AND `course_id` in
+                <foreach item="ids" collection="inCourseIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="resultData != null and resultData != '' ">
+                and `result_data` = #{resultData,jdbcType=VARCHAR}
+            </if>
+            <if test="score != null">
+                and `score` = #{score,jdbcType=INTEGER}
+            </if>
+            <if test="startTime != null">
+                and `update_time` &gt;= #{startTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                and `update_time` &lt;= #{endTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from person_learn_record
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.PersonLearnRecordDO">
+        update person_learn_record
+        <set>
+            <if test="courseId != null">
+                `course_id` = #{courseId,jdbcType=BIGINT},
+            </if>
+            <if test="personId != null">
+                `person_id` = #{personId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="resultData != null">
+                `result_data` = #{resultData,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                `score` = #{score,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where record_id = #{recordId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from person_learn_record
+        <where>
+            <if test="recordId != null">
+                and `record_id` = #{recordId,jdbcType=BIGINT}
+            </if>
+            <if test="courseId != null">
+                and `course_id` = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="resultData != null and resultData != '' ">
+                and `result_data` = #{resultData,jdbcType=VARCHAR}
+            </if>
+            <if test="score != null">
+                and `score` = #{score,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from person_learn_record where record_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from person_learn_record where record_id = #{recordId,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ICourseStageGroupMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.CourseStageGroupDO">
+        insert into course_stage_group
+        (
+            `id`, `name`, `code`, `stage_id`,
+            `week`, `course_number`, `create_by`, `create_time`,
+            `update_by`, `update_time`
+        )
+        values
+            (
+                #{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{code,jdbcType=INTEGER}, #{stageId,jdbcType=BIGINT},
+                #{week,jdbcType=INTEGER}, #{courseNumber,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateBy,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.CourseStageGroupDO">
+        select
+        `id`, `name`, `code`, `stage_id`,
+        `week`, `course_number`, `create_by`, `create_time`,
+        `update_by`, `update_time`
+        from course_stage_group
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.CourseStageGroupDO"
+            parameterType="cn.smart.condition.CourseStageGroupQueryCondition">
+        select
+        `id`, `name`, `code`, `stage_id`,
+        `week`, `course_number`, `create_by`, `create_time`,
+        `update_by`, `update_time`
+        from course_stage_group
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null">
+                and `code` = #{code,jdbcType=INTEGER}
+            </if>
+            <if test="stageId != null">
+                and `stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="week != null">
+                and `week` = #{week,jdbcType=INTEGER}
+            </if>
+            <if test="courseNumber != null">
+                and `course_number` = #{courseNumber,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+            parameterType="cn.smart.condition.CourseStageGroupQueryCondition">
+        select count(1) as total from course_stage_group
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null">
+                and `code` = #{code,jdbcType=INTEGER}
+            </if>
+            <if test="stageId != null">
+                and `stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="week != null">
+                and `week` = #{week,jdbcType=INTEGER}
+            </if>
+            <if test="courseNumber != null">
+                and `course_number` = #{courseNumber,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from course_stage_group
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.CourseStageGroupDO">
+        update course_stage_group
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                `code` = #{code,jdbcType=INTEGER},
+            </if>
+            <if test="stageId != null">
+                `stage_id` = #{stageId,jdbcType=BIGINT},
+            </if>
+            <if test="week != null">
+                `week` = #{week,jdbcType=INTEGER},
+            </if>
+            <if test="courseNumber != null">
+                `course_number` = #{courseNumber,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.CourseStageGroupDO">
+        update course_stage_group SET
+        `name` = #{name,jdbcType=VARCHAR},
+        `code` = #{code,jdbcType=INTEGER},
+        `stage_id` = #{stageId,jdbcType=BIGINT},
+        `week` = #{week,jdbcType=INTEGER},
+        `course_number` = #{courseNumber,jdbcType=INTEGER},
+        `create_by` = #{createBy,jdbcType=BIGINT},
+        `update_by` = #{updateBy,jdbcType=BIGINT},
+        where `id` = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from course_stage_group
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null">
+                and `code` = #{code,jdbcType=INTEGER}
+            </if>
+            <if test="stageId != null">
+                and `stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="week != null">
+                and `week` = #{week,jdbcType=INTEGER}
+            </if>
+            <if test="courseNumber != null">
+                and `course_number` = #{courseNumber,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from course_stage_group where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from course_stage_group where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

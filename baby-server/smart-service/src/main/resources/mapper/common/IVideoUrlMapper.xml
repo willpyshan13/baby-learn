@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IVideoUrlMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="videoUrlId" parameterType="cn.smart.entity.VideoUrlDO">
+        insert into video_url
+        (
+       	    video_url_id, video_id, video_format, video_url_desc, 
+       	    video_play_url, video_web_url, video_url_index, status, 
+       	    create_time, update_time
+        )
+        values
+        (
+       	    #{videoUrlId,jdbcType=BIGINT}, #{videoId,jdbcType=BIGINT}, #{videoFormat,jdbcType=VARCHAR}, #{videoUrlDesc,jdbcType=VARCHAR}, 
+       	    #{videoPlayUrl,jdbcType=VARCHAR}, #{videoWebUrl,jdbcType=VARCHAR}, #{videoUrlIndex,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.VideoUrlDO">
+        select
+                video_url_id, video_id, video_format, video_url_desc, 
+                video_play_url, video_web_url, video_url_index, status, 
+                create_time, update_time
+        from video_url
+        where video_url_id = #{videoUrlId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.VideoUrlDO"
+        parameterType="cn.smart.condition.VideoUrlQueryCondition">
+        select
+       	    video_url_id, video_id, video_format, video_url_desc, 
+       	    video_play_url, video_web_url, video_url_index, status, 
+       	    create_time, update_time
+        from video_url
+        <where>
+            <if test="videoUrlId != null">
+                and video_url_id = #{videoUrlId,jdbcType=BIGINT}
+            </if>
+            <if test="emptyVideoId != null and emptyVideoId == 1">
+                and ISNULL(video_id)
+            </if>
+            <if test="videoId != null">
+                and video_id = #{videoId,jdbcType=BIGINT}
+            </if>
+            <if test="videoFormat != null and videoFormat != '' ">
+                and video_format = #{videoFormat,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrlDesc != null and videoUrlDesc != '' ">
+                and video_url_desc like CONCAT('%','${videoUrlDesc}','%')
+            </if>
+            <if test="videoPlayUrl != null and videoPlayUrl != '' ">
+                and video_play_url = #{videoPlayUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoWebUrl != null and videoWebUrl != '' ">
+                and video_web_url = #{videoWebUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrlIndex != null">
+                and video_url_index = #{videoUrlIndex,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by video_url_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.VideoUrlQueryCondition">
+        select count(1) as total from video_url
+        <where>
+            <if test="videoUrlId != null">
+                and video_url_id = #{videoUrlId,jdbcType=BIGINT}
+            </if>
+            <if test="videoId != null">
+                and video_id = #{videoId,jdbcType=BIGINT}
+            </if>
+            <if test="emptyVideoId != null and emptyVideoId == 1">
+                and ISNULL(video_id)
+            </if>
+            <if test="videoFormat != null and videoFormat != '' ">
+                and video_format = #{videoFormat,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrlDesc != null and videoUrlDesc != '' ">
+                and video_url_desc like CONCAT('%','${videoUrlDesc}','%')
+            </if>
+            <if test="videoPlayUrl != null and videoPlayUrl != '' ">
+                and video_play_url = #{videoPlayUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoWebUrl != null and videoWebUrl != '' ">
+                and video_web_url = #{videoWebUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrlIndex != null">
+                and video_url_index = #{videoUrlIndex,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from video_url
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.VideoUrlDO">
+        update video_url
+        <set>
+            <if test="videoId != null">
+                video_id = #{videoId,jdbcType=BIGINT},
+            </if>
+            <if test="videoFormat != null">
+                video_format = #{videoFormat,jdbcType=VARCHAR},
+            </if>
+            <if test="videoUrlDesc != null">
+                video_url_desc = #{videoUrlDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="videoPlayUrl != null">
+                video_play_url = #{videoPlayUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="videoWebUrl != null">
+                video_web_url = #{videoWebUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="videoUrlIndex != null">
+                video_url_index = #{videoUrlIndex,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+        </set>
+        where video_url_id = #{videoUrlId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from video_url
+        <where>
+            <if test="videoUrlId != null">
+                and video_url_id = #{videoUrlId,jdbcType=BIGINT}
+            </if>
+            <if test="videoId != null">
+                and video_id = #{videoId,jdbcType=BIGINT}
+            </if>
+            <if test="videoFormat != null and videoFormat != '' ">
+                and video_format = #{videoFormat,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrlDesc != null and videoUrlDesc != '' ">
+                and video_url_desc = #{videoUrlDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="videoPlayUrl != null and videoPlayUrl != '' ">
+                and video_play_url = #{videoPlayUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoWebUrl != null and videoWebUrl != '' ">
+                and video_web_url = #{videoWebUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrlIndex != null">
+                and video_url_index = #{videoUrlIndex,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from video_url where video_url_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from video_url where video_url_id = #{videoUrlId,jdbcType=BIGINT}
+    </delete>
+</mapper>

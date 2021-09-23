@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.support.scheduler.mapper.ILockMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.smart.support.scheduler.entity.SysLock">
+        insert into sys_lock
+        (
+         key_, name_, expire_second,create_time
+        )
+        values
+        (
+          #{key,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},#{expireSecond,jdbcType=TIMESTAMP}, now()
+        )
+    </insert>
+
+    <select id="selectOne" parameterType="cn.smart.support.scheduler.entity.SysLock"
+            resultType="cn.smart.support.scheduler.entity.SysLock">
+        SELECT * FROM sys_lock WHERE key_ = #{key}
+    </select>
+
+    <delete id="cleanExpiredLock">
+        delete from sys_lock where TIMESTAMPDIFF(SECOND,create_time, now())>=expire_second
+    </delete>
+
+    <delete id="delete">
+        DELETE FROM sys_lock
+        <where>
+            <if test="key != null">
+                and key_ = #{key,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </delete>
+
+</mapper>

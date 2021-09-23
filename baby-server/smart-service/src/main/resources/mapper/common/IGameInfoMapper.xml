@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IGameInfoMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.GameInfoDO">
+        insert into game_info
+        (
+       	    `id`, `name`, `info`, `image_url`, 
+       	    `resource_url`, `status`, `level`, `type`, 
+       	    `serial_number`, `create_time`, `update_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+       	    #{resourceUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+       	    #{serialNumber,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.GameInfoDO">
+        select
+                `id`, `name`, `info`, `image_url`, 
+                `resource_url`, `status`, `level`, `type`, 
+                `serial_number`, `create_time`, `update_time`
+        from game_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.GameInfoDO"
+        parameterType="cn.smart.condition.GameInfoQueryCondition">
+        select
+            gi.`id`, gi.`name`, gi.`info`, gi.`image_url`,
+            gi.`resource_url`, gi.`status`, gi.`level`, gi.`type`,
+            gi.`serial_number`, gi.`create_time`, gi.`update_time`
+        from game_info gi
+        <where>
+            <if test="id != null">
+                and gi.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="inGameIds != null">
+                AND `id` in
+                <foreach item="ids" collection="inGameIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="courseId != null">
+                AND NOT EXISTS (SELECT game_info_id id FROM course_game WHERE course_info_id = #{courseId,jdbcType=BIGINT} AND game_info_id = gi.id)
+            </if>
+            <if test="name != null and name != '' ">
+                and gi.name like CONCAT('%','${name}','%')
+            </if>
+            <if test="info != null and info != '' ">
+                and gi.info like CONCAT('%','${info}','%')
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and gi.image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="resourceUrl != null and resourceUrl != '' ">
+                and gi.resource_url = #{resourceUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and gi.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="level != null">
+                and gi.`level` = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and gi.type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="serialNumber != null">
+                and gi.serial_number = #{serialNumber,jdbcType=INTEGER}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by gi.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.GameInfoQueryCondition">
+        select count(1) as total from game_info gi
+        <where>
+            <if test="id != null">
+                and gi.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="inGameIds != null">
+                AND `id` in
+                <foreach item="ids" collection="inGameIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="courseId != null">
+                AND NOT EXISTS (SELECT game_info_id id FROM course_game WHERE course_info_id = #{courseId,jdbcType=BIGINT} AND game_info_id = gi.id)
+            </if>
+            <if test="name != null and name != '' ">
+                and gi.name like CONCAT('%','${name}','%')
+            </if>
+            <if test="info != null and info != '' ">
+                and gi.info like CONCAT('%','${info}','%')
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and gi.image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="resourceUrl != null and resourceUrl != '' ">
+                and gi.resource_url = #{resourceUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and gi.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="level != null">
+                and gi.`level` = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and gi.type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="serialNumber != null">
+                and gi.serial_number = #{serialNumber,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from game_info
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.GameInfoDO">
+        update game_info
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                `info` = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="imageUrl != null">
+                `image_url` = #{imageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="resourceUrl != null">
+                `resource_url` = #{resourceUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="level != null">
+                `level` = #{level,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="serialNumber != null">
+                `serial_number` = #{serialNumber,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from game_info
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="info != null and info != '' ">
+                and `info` = #{info,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and `image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="resourceUrl != null and resourceUrl != '' ">
+                and `resource_url` = #{resourceUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="level != null">
+                and `level` = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="serialNumber != null">
+                and `serial_number` = #{serialNumber,jdbcType=INTEGER}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from game_info where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from game_info where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

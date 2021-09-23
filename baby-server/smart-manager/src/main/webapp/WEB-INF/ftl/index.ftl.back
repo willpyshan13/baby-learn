@@ -1,0 +1,386 @@
+<#assign base_url = "http://www.smart-dog.cn">
+<#--<#assign base_url = "http://192.168.20.90">-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no,email=no">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" sizes="any" mask="" href="http://image.smart-dog.cn/iconfont.png">
+    <title>机灵宝宝_英语学习机器人第一品牌！</title>
+    <meta name="keywords" content="英语学习机器人，英语机器人，学习机器人">
+    <meta name="description" content="机灵宝宝是由厦门机灵宝宝教育科技有限公司自主研发的英语学习机器人，致力于为3-7岁儿童提供高品质的英语学习机器人培训教育一站式整体解决方案。">
+    <link rel="stylesheet" href="${base_url}/static/css/common.css">
+    <link rel="stylesheet" href="${base_url}/static/css/index.css">
+</head>
+<body>
+<div id="main" class="main">
+    <div class="content">
+        <header class="header">
+            <div class="header_con">
+                <a href="${base_url}/index.html"><img class="head_logo" src="http://image.smart-dog.cn/headlogo-w.png" alt=""></a>
+                <ul class="header_navigator clearfix">
+                    <li><a href="">功能展示</a></li>
+                    <li><a href="">课程体系</a></li>
+                    <li><a href="">师资力量</a></li>
+                    <li><a href="">我们的承诺</a></li>
+                    <li><a href="">关于我们</a></li>
+
+                </ul>
+                <div class="loginorsignup">
+
+                </div>
+            </div>
+        </header>
+        <div class="banner">
+            <div class="bannercontent" id="b04">
+                <ul class="bannerlist">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+                <a href="javascript:void(0);" class="unslider-arrow04 prev"><img class="arrow" id="al" src="http://image.smart-dog.cn/prev.png" alt="prev" width="20" height="35"></a>
+
+                <a href="javascript:void(0);" class="unslider-arrow04 next"><img class="arrow" id="ar" src="http://image.smart-dog.cn/next.png" alt="next" width="20" height="37"></a>
+            </div>
+        </div>
+        <!--功能展示-->
+        <div class="functionaldisplay">
+            <div class="functionaltitle title">
+                <em class="title_zh">功&nbsp;&nbsp;/&nbsp;&nbsp;能&nbsp;&nbsp;/&nbsp;&nbsp;展&nbsp;&nbsp;/&nbsp;&nbsp;示</em>
+                <span class="title_en">FUNCTIONAL DISPLAY</span>
+            </div>
+            <video id="functionalvideo" class="functionalvideo" src="http://videos.smart-dog.cn/%E6%9C%BA%E7%81%B5%E5%AE%9D%E5%AE%9D%E5%AE%A3%E4%BC%A0%E7%89%870625.mp4" poster="http://image.smart-dog.cn/demovideoposter.jpg" controls="controls"></video>
+            <div class="functionallist">
+                <ul class="clearfix">
+                    <li>
+                        <!-- <img class="lazy" src="http://image.smart-dog.cn/img_functionallist1.jpg" alt=""> -->
+                        <div class="slogan">
+                            <span>专属私人外教</span>
+                            <p>机器人小宝内含外教直播课堂，<br/>会主动跟小朋友打招呼，<br/>提醒每天的线上课程学习</p>
+                        </div>
+                    </li>
+                    <li>
+                        <!-- <img class="lazy" src="http://image.smart-dog.cn/img_functionallist2.jpg" alt=""> -->
+                        <div class="slogan">
+                            <span>智慧成长伙伴</span>
+                            <p>机器人小宝拥有海量英文资源，<br/>陪伴孩子 学习玩耍、快乐成长</p>
+                        </div>
+                    </li>
+                    <li>
+                        <!-- <img class="lazy" src="http://image.smart-dog.cn/img_functionallist3.jpg" alt=""> -->
+                        <div class="slogan">
+                            <span>贴心生活管家</span>
+                            <p>机器人小宝会主动提醒小朋友<br/>各种日常良好行为习惯的养成</p>
+                        </div>
+                    </li>
+                    <li>
+                        <!-- <img class="lazy" src="http://image.smart-dog.cn/img_functionallist4.jpg" alt=""> -->
+                        <div class="slogan">
+                            <span>口语练习帮手</span>
+                            <p>机器人小宝会引导小朋友进行各项日常英文口语交流，<br/>将学过的知识在生活中充分运用</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--课程体系-->
+        <div class="curriculumsystem">
+            <div class="curriculumtitle title">
+                <em class="title_zh">课&nbsp;&nbsp;/&nbsp;&nbsp;程&nbsp;&nbsp;/&nbsp;&nbsp;体&nbsp;&nbsp;/&nbsp;&nbsp;系</em>
+                <span class="title_en">CURRICULUM SYSTEM</span>
+            </div>
+            <div class="curriculumpra">
+                机灵宝宝乐园英语课程为2-7岁儿童提供 将英语学习与智能机器人结合的方式，<br/> 将高效与智能的学习方式完美结合在一起
+            </div>
+            <div class="currilumnlevel">
+                <!-- <img class="currilumnlevel_bg" src="http://image.smart-dog.cn/currilumnlevel_bg.png" alt=""> -->
+                <div class="courselevelt">
+                    <ul class="courseleveltitle clearfix">
+                        <li>LV1</li>
+                        <li>入门精华</li>
+                        <li>LV3</li>
+                        <li>LV4</li>
+                    </ul>
+                </div>
+                <div class="courselevelcontent">
+                    <ul class="courselevelpra">
+                        <li>
+                            <p>
+                                <strong class="reference">参考年龄</strong>
+                                <span class="angerange">2.5岁-7岁</span>
+                            </p>
+                            <div class="target">
+                                <p class="teachtarget">教学目标</p>
+                                <p>1、熟练掌握日常生活中使用频率高的单词。<br></p>
+                                <p>2、熟练掌握日常生活中使用频率高的简单句、疑问句、祈使句、感叹句</p>
+                                <p>3、能够在日常生活中表达问候及简单的对话。</p>
+                                <a class="forcourseinfo" href="${base_url}/coursedetail.html?id=1">了解课程</a>
+                            </div>
+                            <div class="core">
+                                <p class="coreknowledge">核心知识</p>
+                                <p>高频率单词、简单疑问句、BE动词系表结 构句型、感叹句</p>
+                            </div>
+                        </li>
+                        <li>
+                            <p>
+                                <strong class="reference">参考年龄</strong>
+                                <span class="angerange">3-7岁</span>
+                            </p>
+                            <div class="target">
+                                <p class="teachtarget">教学目标</p>
+                                <p>1、熟练掌握日常生活中使用频率高的单词：食物类、颜色类、家庭关系、物品类、交通类
+                                <p>2、熟练掌握日常生活中个人状态的简单表达及使用频率高的句型：疑问句及对应回答</p>
+                                <p>3、能够简单表达日常生活中个人感受和需求。</p>
+                                <a class="forcourseinfo" href="${base_url}/coursedetail.html?id=2">了解课程</a>
+                            </div>
+                            <div class="core">
+                                <p class="coreknowledge">核心知识</p>
+                                <p>高频率单词 单数复数常规表达 他/她的表达 Which\What\How疑问句的表达及回答 BE动词系表结构疑问句型 </p>
+                            </div>
+                        </li>
+                        <li>
+                            <p>
+                                <strong class="reference">参考年龄</strong>
+                                <span class="angerange">4-7岁</span>
+                            </p>
+                            <div class="target">
+                                <p class="teachtarget">教学目标</p>
+                                <p>1、熟练掌握日常生活中使用频率高的单词：食物类、颜色类、家庭关系、物品类、交通类、季节类。
+                                <p>2、熟练掌握日常生活中个人状态的简单表达及使用频率高的句型：疑问句及对应回答。</p>
+                                <p>3、能够简单表达日常生活中个人感受和需求。</p>
+                                <a class="forcourseinfo" href="javascript:void(0);">待开放</a>
+                            </div>
+                            <div class="core">
+                                <p class="coreknowledge">核心知识</p>
+                                <p>高频率单词 个人需要表达 感叹句 where/How many /What/How疑问句的表达及对应回答 将来时态/过去时态</p>
+                            </div>
+                        </li>
+                        <li>
+                            <p>
+                                <strong class="reference">参考年龄</strong>
+                                <span class="angerange">4-7岁</span>
+                            </p>
+                            <div class="target">
+                                <p class="teachtarget">教学目标</p>
+                                <p>1、熟练掌握日常生活中使用频率高的单词：动词类、时间类、特殊日子、机场类、生活物品类。</p>
+                                <p>2、熟练掌握日常生活中时间表达方式、个人情感及需求的表达及购物或出行的简单句表达。</p>
+                                <p>3、能够在日常生活中大胆使用英语表达个人情感及需求。</p>
+                                <a class="forcourseinfo" href="javascript:void(0);">待开放</a>
+                            </div>
+                            <div class="core">
+                                <p class="coreknowledge">核心知识</p>
+                                <p>高频率单词 Borrow/lend的区别 时间表达 why/whose/what/how much/疑问句 及回答 陈述句 现在进行时态/将来时态/过去时态/ </p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="functionalpra">
+            <div class="functionalpra_con clearfix">
+                <ul>
+                    <li>陪伴孩子唱歌与舞蹈</li>
+                    <li>单词短句作歌词</li>
+                    <li>一周学唱一首英文歌</li>
+                    <li>5-10个单词短句开口说</li>
+                </ul>
+                <img class="img_robot" src="http://image.smart-dog.cn/icon_robot.png" alt="">
+            </div>
+        </div>
+        <!--师资力量-->
+        <div class="ourteam">
+            <div class="ourteamtitle title">
+                <em class="title_zh">师&nbsp;&nbsp;/&nbsp;&nbsp;资&nbsp;&nbsp;/&nbsp;&nbsp;力&nbsp;&nbsp;/&nbsp;&nbsp;量</em>
+                <span class="title_en">OUR TEAM</span>
+            </div>
+            <div class="teamteacher">
+                <ul class="teacherlist clearfix">
+                    <li>
+                        <dl>
+                            <dt><img src="http://image.smart-dog.cn/img_sarah.png" alt=""></dt>
+                            <dd>
+                                <strong>Sarah</strong>
+                                <p>机灵宝宝师资团队</p>
+                                <p>培训经理</p>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt><img src="http://image.smart-dog.cn/img_bridie.png" alt=""></dt>
+                            <dd>
+                                <strong>Bridie</strong>
+                                <p>机灵宝宝首席外教</p>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt><img class="img_chris" src="http://image.smart-dog.cn/img_chris.png" alt=""></dt>
+                            <dd>
+                                <strong>Chris</strong>
+                                <p>机灵宝宝外教</p>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <div class="teamcontent">
+                <ul class="teampra">
+                    <li>Sarah老师毕业于厦门大学，而后继续攻读学前教育专业，专注于该领域研究。至今已从事幼儿教育行业十几年，积累了丰富的教学经验，在教育领域获得众多奖项和多项资格证书。
+                        Sarah老师善于寓教于乐，用游戏激发孩子们的学习兴趣，也倡导鼓励式的教学，深受机灵宝宝学员们的喜爱。</li>
+                    <li>来自英国的Bridie老师拥有工商管理和法学双学位，已获得ESL授课资格认证。热情活泼的她曾任英国伯明翰律师事务所法务秘书，在北京幼儿园任教多年，对线上线下的幼儿教学均有丰富经验。
+                        Bridie老师十分热爱教育行业，对小孩子富有爱心。她希望在机灵宝宝大家庭与小朋友们一起共度充满欢乐的学习时光。</li>
+                    <li>Chris老师来自加拿大，毕业于英属哥伦比亚大学，拥有硕士学位及ESL授课资格认证。教学风格幽默风趣的Chris擅长活跃课堂气氛，他的课堂互动性强，总是笑声不断。</li>
+                </ul>
+            </div>
+        </div>
+        <!--新闻中心-->
+        <div class="newscenter">
+            <div class="newscentertitle title">
+                <em class="title_zh">新&nbsp;&nbsp;/&nbsp;&nbsp;闻&nbsp;&nbsp;/&nbsp;&nbsp;中&nbsp;&nbsp;/&nbsp;&nbsp;心</em>
+                <span class="title_en">NEWS CENTER</span>
+            </div>
+            <div class="newscentercontent">
+                <ul class="newslist clearfix">
+                    <li class="industryInformation" id="industryInformation">
+                        <dl>
+                            <dt><b class="icon_industryInformation"></b></dt>
+                            <dd>
+                                <a href="${base_url}/industryinformation.html"><strong>行业资讯</strong></a>
+                                <ul>
+                            <#list article as row>
+                                <#if row?? && row.url?? && row.type == 1>
+                                    <li><a target="_blank" href="${base_url}/smart/s${row.url}">${row.title}</a></li>
+                                </#if>
+                            </#list>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="lastActivity" id="lastActivity">
+                        <dl>
+                            <dt><b class="icon_lastActivity"></b></dt>
+                            <dd>
+                                <a href="${base_url}/latestactivities.html"><strong>最新活动</strong></a>
+                                <ul>
+                            <#list article as row>
+                                <#if row?? && row.url?? && row.type == 2>
+                                    <li><a target="_blank" href="${base_url}/smart/s${row.url}">${row.title}</a></li>
+                                </#if>
+                            </#list>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="mediaReport" id="mediaReport">
+                        <dl>
+                            <dt><b class="icon_mediareport"></b></dt>
+                            <dd>
+                                <a href="${base_url}/mediareports.html"><strong>媒体报道</strong></a>
+                                <ul>
+                            <#list article as row>
+                                <#if row?? && row.url?? && row.type == 3>
+                                    <li><a target="_blank" href="${base_url}/smart/s${row.url}">${row.title}</a></li>
+                                </#if>
+                            </#list>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="productquestionnaire" id="productquestionnaire">
+                        <dl>
+                            <dt><b class="icon_productquestionnaire"></b></dt>
+                            <dd>
+                                <a href="${base_url}/productquestionanswer.html"><strong>产品问答</strong></a>
+                                <ul>
+                            <#list article as row>
+                                <#if row?? && row.url?? && row.type == 4>
+                                    <li><a target="_blank" href="${base_url}/smart/s${row.url}">${row.title}</a></li>
+                                </#if>
+                            </#list>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--我们的承诺-->
+        <div class="ourpromise">
+            <div class="ourpromisetitle title">
+                <em class="title_zh">我&nbsp;&nbsp;/&nbsp;&nbsp;们&nbsp;&nbsp;/&nbsp;&nbsp;的&nbsp;&nbsp;/&nbsp;&nbsp;承&nbsp;&nbsp;/&nbsp;&nbsp;诺</em>
+                <span class="title_en">OUR PROMISE</span>
+            </div>
+            <div class="promisecontent">
+                <ul class="clearfix">
+                    <li>
+                        <dl>
+                            <dt>
+                                <img src="http://image.smart-dog.cn/icon_free.png" alt="">
+                                <p>免费试学承诺</p>
+                            </dt>
+                            <dd>
+                                <p>机灵宝宝承诺每位新学员可免费领取一周在线学习课程；付费学员退费条款详见<a class="userprotocol" href="${base_url}/userprotocol.html">《机灵宝宝课程服务协议》</a></p>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>
+                                <img src="http://image.smart-dog.cn/icon_team.png" alt="">
+                                <p>师资承诺</p>
+                            </dt>
+                            <dd>
+                                <p>我们确保机灵宝宝师资团队都是经过严格甄选、具有教学经验、懂教育孩子的优秀外教</p>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>
+                                <img src="http://image.smart-dog.cn/icon_server.png" alt="">
+                                <p>服务承诺</p>
+                            </dt>
+                            <dd>
+                                <p>机灵宝宝将与每位付费学员签订<a class="userprotocol" href="${base_url}/userprotocol.html">《机灵宝宝课程服务协议》</a>，为其提供服务保障</p>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--关于我们-->
+        <div class="aboutus">
+            <div class="aboutustitle title">
+                <em class="title_zh">关&nbsp;&nbsp;/&nbsp;&nbsp;于&nbsp;&nbsp;/&nbsp;&nbsp;我&nbsp;&nbsp;/&nbsp;&nbsp;们</em>
+                <span class="title_en">ABOUT US</span>
+            </div>
+            <div class="aboutuscontent">
+                <p>机灵宝宝教育致力于将自主研发的儿童智慧英语机器人与机灵宝宝课程相结合，为2至7岁的孩子提供  <br/>适龄性的特色英语教育课程与服务 </p>
+                <img class="qrcode" src="http://image.smart-dog.cn/qrcode.jpg" alt="">
+                <div class="pubnum">机灵宝宝微信公众号</div>
+            </div>
+        </div>
+        <!--联系我们-->
+        <footer class="footer">
+
+        </footer>
+        <div class="gototop" id="gototop">
+            <b></b>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="${base_url}/static/js/jquery.min.js"></script>
+<script src="${base_url}/static/js/unslider.min.js"></script>
+<script src="${base_url}/static/js/common.js"></script>
+<script src="${base_url}/static/js/index.js"></script>
+</html>

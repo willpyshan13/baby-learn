@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ICourseStageGroupGoodsMapper">
+
+    <insert id="saveBatch" parameterType="List">
+        INSERT INTO course_stage_group_goods
+        (
+          goods_id, stage_id, group_id,
+          exchange_points, create_by, create_time
+        ) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (
+            #{item.goodsId,jdbcType=BIGINT}, #{item.stageId,jdbcType=BIGINT}, #{item.groupId,jdbcType=BIGINT},
+            #{item.exchangePoints,jdbcType=INTEGER}, #{item.createBy,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.CourseStageGroupGoodsDO">
+        insert into course_stage_group_goods
+        (
+       	    `id`, `goods_id`, `stage_id`, `group_id`, 
+       	    `exchange_points`, `create_by`, `create_time`, `update_by`, 
+       	    `update_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{stageId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, 
+       	    #{exchangePoints,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=BIGINT}, 
+       	    #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.CourseStageGroupGoodsDO">
+        select
+                `id`, `goods_id`, `stage_id`, `group_id`, 
+                `exchange_points`, `create_by`, `create_time`, `update_by`, 
+                `update_time`
+        from course_stage_group_goods
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+
+    <select id="queryList" resultType="cn.smart.entity.CourseStageGroupGoodsDO"
+            parameterType="cn.smart.condition.CourseStageGroupGoodsQueryCondition">
+        select
+        csgg.`id`, csgg.`goods_id`, csgg.`group_id`, csgg.`stage_id`, csgg.`exchange_points`,
+        csgg.`create_by`, csgg.`create_time`, csgg.`update_by`, csgg.`update_time`,
+        g.name goods_name, g.price goods_price, g.image_url goods_image_url, g.card_image_url goods_card_image_url
+        from course_stage_group_goods csgg
+        LEFT JOIN goods g on g.id = csgg.goods_id
+        <where>
+            <if test="id != null">
+                and csgg.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="goodsId != null">
+                and csgg.`goods_id` = #{goodsId,jdbcType=BIGINT}
+            </if>
+            <if test="stageId != null">
+                and csgg.`stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and csgg.`group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+            <if test="exchangePoints != null">
+                and csgg.`exchange_points` = #{exchangePoints,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and csgg.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and csgg.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and csgg.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and csgg.`update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="inGroupId != null">
+                AND csgg.`group_id` in
+                <foreach item="id" collection="inGroupId" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by csgg.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.CourseStageGroupGoodsQueryCondition">
+        select count(1) as total from course_stage_group_goods
+        <where>
+            <if test="id != null">
+                and csgg.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="goodsId != null">
+                and csgg.`goods_id` = #{goodsId,jdbcType=BIGINT}
+            </if>
+            <if test="stageId != null">
+                and csgg.`stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and csgg.`group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+            <if test="exchangePoints != null">
+                and csgg.`exchange_points` = #{exchangePoints,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and csgg.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and csgg.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and csgg.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and csgg.`update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="inGroupId != null">
+                AND csgg.`group_id` in
+                <foreach item="id" collection="inGroupId" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from course_stage_group_goods
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.CourseStageGroupGoodsDO">
+        update course_stage_group_goods
+        <set>
+            <if test="goodsId != null">
+                `goods_id` = #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="stageId != null">
+                `stage_id` = #{stageId,jdbcType=BIGINT},
+            </if>
+            <if test="groupId != null">
+                `group_id` = #{groupId,jdbcType=BIGINT},
+            </if>
+            <if test="exchangePoints != null">
+                `exchange_points` = #{exchangePoints,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.CourseStageGroupGoodsDO">
+        update course_stage_group_goods SET
+            `goods_id` = #{goodsId,jdbcType=BIGINT},
+            `stage_id` = #{stageId,jdbcType=BIGINT},
+            `group_id` = #{groupId,jdbcType=BIGINT},
+            `exchange_points` = #{exchangePoints,jdbcType=INTEGER},
+            `create_by` = #{createBy,jdbcType=BIGINT},
+            `update_by` = #{updateBy,jdbcType=BIGINT},
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from course_stage_group_goods
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="goodsId != null">
+                and `goods_id` = #{goodsId,jdbcType=BIGINT}
+            </if>
+            <if test="stageId != null">
+                and `stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and `group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+            <if test="exchangePoints != null">
+                and `exchange_points` = #{exchangePoints,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from course_stage_group_goods where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from course_stage_group_goods where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

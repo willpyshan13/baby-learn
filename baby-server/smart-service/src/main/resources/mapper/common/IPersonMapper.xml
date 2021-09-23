@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IPersonMapper">
+
+
+    <select id="queryPersonClass" resultType="cn.smart.entity.ClassInfoDO"
+            parameterType="cn.smart.condition.PersonQueryCondition">
+        SELECT  ci.id, ci.class_info, ci.class_name, ci.push_tag
+        FROM class_info ci
+        LEFT JOIN class_person cp ON  cp.class_id = ci.id
+        LEFT JOIN person p ON p.person_id = cp.person_id
+        <where>
+            <if test="personId != null">
+                p.person_id = #{personId, jdbcType=BIGINT}
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="getPersonToClass" resultType="cn.smart.entity.PersonDO"
+            parameterType="cn.smart.condition.PersonQueryCondition">
+        SELECT
+            DISTINCT p.person_id, p.birthday, p.create_time, p.gender,
+            p.mobile_number, p.mobile_serial, p.nick_name, p.password,
+            p.person_desc, p.photo_url, p.status, p.update_time,
+            p.user_name, p.accumulated_points, p.channel, push_alias
+        FROM
+        person p
+        LEFT JOIN class_person cp ON cp.person_id = p.person_id
+        <where>
+            <if test="classId != null and classId != '' ">
+                and NOT EXISTS (SELECT p.person_id FROM class_person cp WHERE p.person_id = cp.person_id AND cp.class_id = #{classId, jdbcType=BIGINT})
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and p.mobile_number like CONCAT('%','${mobileNumber}','%')
+            </if>
+            <if test="nickName != null and nickName != '' ">
+                and p.nick_name like CONCAT('%','${nickName}','%')
+            </if>
+            <if test="gender != null">
+                and p.gender = #{gender,jdbcType=TINYINT}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by p.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by p.person_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="countPersonToClass" resultType="int"
+            parameterType="cn.smart.condition.PersonQueryCondition">
+        SELECT
+          count(DISTINCT p.person_id) total
+        FROM
+        person p
+        LEFT JOIN class_person cp ON cp.person_id = p.person_id
+        <where>
+            <if test="classId != null and classId != '' ">
+                and NOT EXISTS (SELECT p.person_id FROM class_person cp WHERE p.person_id = cp.person_id AND cp.class_id = #{classId, jdbcType=BIGINT})
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and p.mobile_number like CONCAT('%','${mobileNumber}','%')
+            </if>
+            <if test="nickName != null and nickName != '' ">
+                and p.nick_name like CONCAT('%','${nickName}','%')
+            </if>
+            <if test="gender != null">
+                and p.gender = #{gender,jdbcType=TINYINT}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="personId" parameterType="cn.smart.entity.PersonDO">
+        insert into person
+        (
+       	    person_id, birthday, create_time, gender, 
+       	    mobile_number, mobile_serial, nick_name, password, 
+       	    person_desc, photo_url, status, update_time, 
+       	    user_name, accumulated_points, channel, push_alias, candy_points, cake_points,
+            learning_stage, week_report_id, wx_mp_id
+            <if test="login != null">
+                    , login
+                </if>
+            )
+        values
+        (
+       	    #{personId,jdbcType=BIGINT}, #{birthday,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{gender,jdbcType=TINYINT}, 
+       	    #{mobileNumber,jdbcType=VARCHAR}, #{mobileSerial,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+       	    #{personDesc,jdbcType=VARCHAR}, #{photoUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+       	    #{userName,jdbcType=VARCHAR}, #{accumulatedPoints,jdbcType=BIGINT}, #{channel,jdbcType=INTEGER}, #{pushAlias,jdbcType=VARCHAR},
+            #{candyPoints, jdbcType=INTEGER}, #{cakePoints, jdbcType=INTEGER},#{learningStage,jdbcType=BIGINT},
+            #{weekReportId,jdbcType=BIGINT}, #{wxMpId,jdbcType=VARCHAR}
+            <if test="login != null">
+                ,${login}
+            </if>
+            )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.PersonDO">
+        select
+            p.person_id, p.birthday, p.create_time, p.gender,
+            p.mobile_number, p.mobile_serial, p.nick_name, p.password,
+            p.person_desc, p.photo_url, p.status, p.update_time,
+            p.user_name, p.accumulated_points, p.channel, p.push_alias, p.candy_points, p.cake_points,
+            p.learning_stage, login, p.week_report_id, p.wx_mp_id
+        from person p
+        where p.person_id = #{personId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.PersonDO"
+        parameterType="cn.smart.condition.PersonQueryCondition">
+        select
+            p.person_id, p.birthday, p.create_time, p.gender,
+            p.mobile_number, p.mobile_serial, p.nick_name, p.password,
+            p.person_desc, p.photo_url, p.status, p.update_time,
+            p.user_name, p.accumulated_points, p.channel, p.push_alias, p.candy_points, p.cake_points,
+            p.learning_stage, p.login, p.week_report_id, p.wx_mp_id
+        from person p
+        <where>
+            <if test="personId != null">
+                and p.person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="gender != null">
+                and p.gender = #{gender,jdbcType=TINYINT}
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and p.mobile_number = #{mobileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="nickName != null and nickName != '' ">
+                and p.nick_name like CONCAT('%','${nickName}','%')
+            </if>
+            <if test="password != null and password != '' ">
+                and p.password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="personDesc != null and personDesc != '' ">
+                and p.person_desc = #{personDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and p.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and p.user_name like CONCAT('%','${userName}','%')
+            </if>
+            <if test="channel != null">
+                and p.channel = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="exitsPersonIds != null">
+                and p.person_id in
+                <foreach item="ids" collection="exitsPersonIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="wxMpId != null">
+                and p.wx_mp_id = #{wxMpId,jdbcType=VARCHAR}
+            </if>
+            <if test="searchKeys != null and searchKeys != ''">
+                and (
+                  p.nick_name like CONCAT('%','${searchKeys}','%')
+                  or p.user_name like CONCAT('%','${searchKeys}','%')
+                  or p.mobile_number like CONCAT('%','${searchKeys}','%')
+                )
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by person_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.PersonQueryCondition">
+        select count(1) as total from person p
+        <where>
+            <if test="personId != null">
+                and p.person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="gender != null">
+                and p.gender = #{gender,jdbcType=TINYINT}
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and p.mobile_number = #{mobileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="nickName != null and nickName != '' ">
+                and p.nick_name like CONCAT('%','${nickName}','%')
+            </if>
+            <if test="password != null and password != '' ">
+                and p.password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="personDesc != null and personDesc != '' ">
+                and p.person_desc = #{personDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and p.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and p.user_name like CONCAT('%','${userName}','%')
+            </if>
+            <if test="channel != null">
+                and p.channel = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="exitsPersonIds != null">
+                and p.person_id in
+                <foreach item="ids" collection="exitsPersonIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="wxMpId != null">
+                and p.wx_mp_id = #{wxMpId,jdbcType=VARCHAR}
+            </if>
+            <if test="searchKeys != null">
+                and (
+                p.nick_name like CONCAT('%','${searchKeys}','%')
+                or p.user_name like CONCAT('%','${searchKeys}','%')
+                or p.mobile_number like CONCAT('%','${searchKeys}','%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from person
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.PersonDO">
+        update person
+        <set>
+            <if test="birthday != null">
+                birthday = #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=TINYINT},
+            </if>
+            <if test="mobileNumber != null ">
+                mobile_number = #{mobileNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="mobileSerial != null  ">
+                mobile_serial = #{mobileSerial,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null  ">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="personDesc != null  ">
+                person_desc = #{personDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="photoUrl != null ">
+                photo_url = #{photoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null  ">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="accumulatedPoints != null">
+                accumulated_points = #{accumulatedPoints,jdbcType=BIGINT},
+            </if>
+            <if test="channel != null">
+                channel = #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="pushAlias != null  ">
+                push_alias = #{pushAlias,jdbcType=VARCHAR},
+            </if>
+            <if test="candyPoints != null  ">
+                candy_points = #{candyPoints,jdbcType=INTEGER},
+            </if>
+            <if test="cakePoints != null  ">
+                cake_points = #{cakePoints,jdbcType=INTEGER},
+            </if>
+            <if test="learningStage != null">
+                learning_stage = #{learningStage, jdbcType=BIGINT},
+            </if>
+            <if test="login != null">
+                login = #{login, jdbcType=TINYINT},
+            </if>
+            <if test="weekReportId != null">
+                week_report_id = #{weekReportId, jdbcType=TINYINT},
+            </if>
+            <if test="wxMpId != null">
+                wx_mp_id = #{wxMpId, jdbcType=TINYINT}
+            </if>
+        </set>
+        where person_id = #{personId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from person
+        <where>
+            <if test="personId != null">
+                and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="birthday != null and birthday != '' ">
+                and birthday = #{birthday,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=TINYINT}
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and mobile_number = #{mobileNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="mobileSerial != null and mobileSerial != '' ">
+                and mobile_serial = #{mobileSerial,jdbcType=VARCHAR}
+            </if>
+            <if test="nickName != null and nickName != '' ">
+                and nick_name = #{nickName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null and password != '' ">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="personDesc != null and personDesc != '' ">
+                and person_desc = #{personDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="photoUrl != null and photoUrl != '' ">
+                and photo_url = #{photoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="accumulatedPoints != null">
+                and accumulated_points = #{accumulatedPoints,jdbcType=BIGINT}
+            </if>
+            <if test="channel != null">
+                and channel = #{channel,jdbcType=INTEGER}
+            </if>
+            <if test="pushAlias != null and pushAlias != '' ">
+                and push_alias = #{pushAlias,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from person where person_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from person where person_id = #{personId,jdbcType=BIGINT}
+    </delete>
+</mapper>

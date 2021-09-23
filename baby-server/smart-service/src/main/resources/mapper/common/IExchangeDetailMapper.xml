@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IExchangeDetailMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.ExchangeDetailDO">
+        insert into exchange_detail
+        (
+       	    `id`, `person_id`, `integral_type`, `goods_id`, 
+       	    `numbers`, `points`, `area_code`, `address`, 
+       	    `phone`, `express`, `express_code`, `send_time`, 
+       	    `status`, `receive_time`, `remark`, `create_by`, 
+       	    `create_time`, `update_by`, `update_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{personId,jdbcType=BIGINT}, #{integralType,jdbcType=INTEGER}, #{goodsId,jdbcType=BIGINT}, 
+       	    #{numbers,jdbcType=BIGINT}, #{points,jdbcType=INTEGER}, #{areaCode,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+       	    #{phone,jdbcType=VARCHAR}, #{express,jdbcType=INTEGER}, #{expressCode,jdbcType=VARCHAR}, #{sendTime,jdbcType=TIMESTAMP}, 
+       	    #{status,jdbcType=INTEGER}, #{receiveTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=BIGINT}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.ExchangeDetailDO">
+        select
+                `id`, `person_id`, `integral_type`, `goods_id`, 
+                `numbers`, `points`, `area_code`, `address`, 
+                `phone`, `express`, `express_code`, `send_time`, 
+                `status`, `receive_time`, `remark`, `create_by`, 
+                `create_time`, `update_by`, `update_time`
+        from exchange_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.ExchangeDetailDO"
+        parameterType="cn.smart.condition.ExchangeDetailQueryCondition">
+        select
+       	    `id`, `person_id`, `integral_type`, `goods_id`, 
+       	    `numbers`, `points`, `area_code`, `address`, 
+       	    `phone`, `express`, `express_code`, `send_time`, 
+       	    `status`, `receive_time`, `remark`, `create_by`, 
+       	    `create_time`, `update_by`, `update_time`
+        from exchange_detail
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="integralType != null">
+                and `integral_type` = #{integralType,jdbcType=INTEGER}
+            </if>
+            <if test="goodsId != null">
+                and `goods_id` = #{goodsId,jdbcType=BIGINT}
+            </if>
+            <if test="numbers != null">
+                and `numbers` = #{numbers,jdbcType=BIGINT}
+            </if>
+            <if test="points != null">
+                and `points` = #{points,jdbcType=INTEGER}
+            </if>
+            <if test="areaCode != null and areaCode != '' ">
+                and `area_code` = #{areaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null and address != '' ">
+                and `address` = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null and phone != '' ">
+                and `phone` = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="express != null">
+                and `express` = #{express,jdbcType=INTEGER}
+            </if>
+            <if test="expressCode != null and expressCode != '' ">
+                and `express_code` = #{expressCode,jdbcType=VARCHAR}
+            </if>
+            <if test="sendTime != null">
+                and `send_time` = #{sendTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="receiveTime != null">
+                and `receive_time` = #{receiveTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.ExchangeDetailQueryCondition">
+        select count(1) as total from exchange_detail
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="integralType != null">
+                and `integral_type` = #{integralType,jdbcType=INTEGER}
+            </if>
+            <if test="goodsId != null">
+                and `goods_id` = #{goodsId,jdbcType=BIGINT}
+            </if>
+            <if test="numbers != null">
+                and `numbers` = #{numbers,jdbcType=BIGINT}
+            </if>
+            <if test="points != null">
+                and `points` = #{points,jdbcType=INTEGER}
+            </if>
+            <if test="areaCode != null and areaCode != '' ">
+                and `area_code` = #{areaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null and address != '' ">
+                and `address` = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null and phone != '' ">
+                and `phone` = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="express != null">
+                and `express` = #{express,jdbcType=INTEGER}
+            </if>
+            <if test="expressCode != null and expressCode != '' ">
+                and `express_code` = #{expressCode,jdbcType=VARCHAR}
+            </if>
+            <if test="sendTime != null">
+                and `send_time` = #{sendTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="receiveTime != null">
+                and `receive_time` = #{receiveTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from exchange_detail
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.ExchangeDetailDO">
+        update exchange_detail
+        <set>
+            <if test="personId != null">
+                `person_id` = #{personId,jdbcType=BIGINT},
+            </if>
+            <if test="integralType != null">
+                `integral_type` = #{integralType,jdbcType=INTEGER},
+            </if>
+            <if test="goodsId != null">
+                `goods_id` = #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="numbers != null">
+                `numbers` = #{numbers,jdbcType=BIGINT},
+            </if>
+            <if test="points != null">
+                `points` = #{points,jdbcType=INTEGER},
+            </if>
+            <if test="areaCode != null">
+                `area_code` = #{areaCode,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                `address` = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                `phone` = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="express != null">
+                `express` = #{express,jdbcType=INTEGER},
+            </if>
+            <if test="expressCode != null">
+                `express_code` = #{expressCode,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                `send_time` = #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="receiveTime != null">
+                `receive_time` = #{receiveTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from exchange_detail
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="integralType != null">
+                and `integral_type` = #{integralType,jdbcType=INTEGER}
+            </if>
+            <if test="goodsId != null">
+                and `goods_id` = #{goodsId,jdbcType=BIGINT}
+            </if>
+            <if test="numbers != null">
+                and `numbers` = #{numbers,jdbcType=BIGINT}
+            </if>
+            <if test="points != null">
+                and `points` = #{points,jdbcType=INTEGER}
+            </if>
+            <if test="areaCode != null and areaCode != '' ">
+                and `area_code` = #{areaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null and address != '' ">
+                and `address` = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null and phone != '' ">
+                and `phone` = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="express != null">
+                and `express` = #{express,jdbcType=INTEGER}
+            </if>
+            <if test="expressCode != null and expressCode != '' ">
+                and `express_code` = #{expressCode,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from exchange_detail where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from exchange_detail where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

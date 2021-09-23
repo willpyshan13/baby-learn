@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IVideoTypeMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="typeId" parameterType="cn.smart.entity.VideoTypeDO">
+        insert into video_type
+        (
+       	    `type_id`, `type_desc`, `type_name`, `type_parent`, 
+       	    `create_time`, `update_time`
+        )
+        values
+        (
+       	    #{typeId,jdbcType=BIGINT}, #{typeDesc,jdbcType=VARCHAR}, #{typeName,jdbcType=VARCHAR}, #{typeParent,jdbcType=BIGINT}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.VideoTypeDO">
+        select
+                `type_id`, `type_desc`, `type_name`, `type_parent`, 
+                `create_time`, `update_time`
+        from video_type
+        where type_id = #{typeId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.VideoTypeDO"
+        parameterType="cn.smart.condition.VideoTypeQueryCondition">
+        select
+        a.type_id, a.type_desc, a.type_name, a.type_parent, a.`create_time`, a.`update_time`,(SELECT type_desc from video_type where type_id = a.type_parent) parent_name
+        from video_type a
+        <where>
+            <if test="typeId != null">
+                and a.type_id = #{typeId,jdbcType=BIGINT}
+            </if>
+            <if test="typeDesc != null and typeDesc != '' ">
+                and a.type_desc like CONCAT('%','${typeDesc}','%')
+            </if>
+            <if test="typeName != null and typeName != '' ">
+                and a.type_name like CONCAT('%','${typeName}','%')
+            </if>
+            <if test="typeParent != null">
+                and a.type_parent = #{typeParent,jdbcType=BIGINT}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by a.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by a.type_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.VideoTypeQueryCondition">
+        select count(1) as total from video_type a
+        <where>
+            <if test="typeId != null">
+                and a.type_id = #{typeId,jdbcType=BIGINT}
+            </if>
+            <if test="typeDesc != null and typeDesc != '' ">
+                and a.type_desc like CONCAT('%','${typeDesc}','%')
+            </if>
+            <if test="typeName != null and typeName != '' ">
+                and a.type_name like CONCAT('%','${typeName}','%')
+            </if>
+            <if test="typeParent != null">
+                and a.type_parent = #{typeParent,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from video_type
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.VideoTypeDO">
+        update video_type
+        <set>
+            <if test="typeDesc != null">
+                `type_desc` = #{typeDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="typeName != null">
+                `type_name` = #{typeName,jdbcType=VARCHAR},
+            </if>
+            <if test="typeParent != null">
+                `type_parent` = #{typeParent,jdbcType=BIGINT},
+            </if>
+        </set>
+        where type_id = #{typeId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from video_type
+        <where>
+            <if test="typeId != null">
+                and `type_id` = #{typeId,jdbcType=BIGINT}
+            </if>
+            <if test="typeDesc != null and typeDesc != '' ">
+                and `type_desc` = #{typeDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="typeName != null and typeName != '' ">
+                and `type_name` = #{typeName,jdbcType=VARCHAR}
+            </if>
+            <if test="typeParent != null">
+                and `type_parent` = #{typeParent,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from video_type where type_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from video_type where type_id = #{typeId,jdbcType=BIGINT}
+    </delete>
+</mapper>

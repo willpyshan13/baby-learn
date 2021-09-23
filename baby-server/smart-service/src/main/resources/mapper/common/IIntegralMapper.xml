@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IIntegralMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.IntegralDO">
+        insert into integral
+        (
+       	    `id`, `person_id`, `number`, `type`, 
+       	    `source`, `create_date`, `create_time`, `course_id`, 
+       	    `learn_record_id`, `exchange_detail_id`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{personId,jdbcType=BIGINT}, #{number,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+       	    #{source,jdbcType=INTEGER}, #{createDate,jdbcType=DATE}, #{createTime,jdbcType=TIMESTAMP}, #{courseId,jdbcType=BIGINT}, 
+       	    #{learnRecordId,jdbcType=BIGINT}, #{exchangeDetailId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.IntegralDO">
+        select
+                `id`, `person_id`, `number`, `type`, 
+                `source`, `create_date`, `create_time`, `course_id`, 
+                `learn_record_id`, `exchange_detail_id`
+        from integral
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.IntegralDO"
+        parameterType="cn.smart.condition.IntegralQueryCondition">
+        select
+       	    `id`, `person_id`, `number`, `type`, 
+       	    `source`, `create_date`, `create_time`, `course_id`, 
+       	    `learn_record_id`, `exchange_detail_id`
+        from integral
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="number != null">
+                and `number` = #{number,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="source != null">
+                and `source` = #{source,jdbcType=INTEGER}
+            </if>
+            <if test="createDate != null">
+                and `create_date` = #{createDate,jdbcType=DATE}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="courseId != null">
+                and `course_id` = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="learnRecordId != null">
+                and `learn_record_id` = #{learnRecordId,jdbcType=BIGINT}
+            </if>
+            <if test="exchangeDetailId != null">
+                and `exchange_detail_id` = #{exchangeDetailId,jdbcType=BIGINT}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.IntegralQueryCondition">
+        select count(1) as total from integral
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="number != null">
+                and `number` = #{number,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="source != null">
+                and `source` = #{source,jdbcType=INTEGER}
+            </if>
+            <if test="courseId != null">
+                and `course_id` = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="learnRecordId != null">
+                and `learn_record_id` = #{learnRecordId,jdbcType=BIGINT}
+            </if>
+            <if test="exchangeDetailId != null">
+                and `exchange_detail_id` = #{exchangeDetailId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from integral
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.IntegralDO">
+        update integral
+        <set>
+            <if test="personId != null">
+                `person_id` = #{personId,jdbcType=BIGINT},
+            </if>
+            <if test="number != null">
+                `number` = #{number,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="source != null">
+                `source` = #{source,jdbcType=INTEGER},
+            </if>
+            <if test="courseId != null">
+                `course_id` = #{courseId,jdbcType=BIGINT},
+            </if>
+            <if test="learnRecordId != null">
+                `learn_record_id` = #{learnRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="exchangeDetailId != null">
+                `exchange_detail_id` = #{exchangeDetailId,jdbcType=BIGINT}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.IntegralDO">
+        update integral SET
+            `person_id` = #{personId,jdbcType=BIGINT},
+            `number` = #{number,jdbcType=INTEGER},
+            `type` = #{type,jdbcType=INTEGER},
+            `source` = #{source,jdbcType=INTEGER},
+            `course_id` = #{courseId,jdbcType=BIGINT},
+            `learn_record_id` = #{learnRecordId,jdbcType=BIGINT},
+            `exchange_detail_id` = #{exchangeDetailId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from integral
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="number != null">
+                and `number` = #{number,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="source != null">
+                and `source` = #{source,jdbcType=INTEGER}
+            </if>
+            <if test="createDate != null">
+                and `create_date` = #{createDate,jdbcType=DATE}
+            </if>
+            <if test="courseId != null">
+                and `course_id` = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="learnRecordId != null">
+                and `learn_record_id` = #{learnRecordId,jdbcType=BIGINT}
+            </if>
+            <if test="exchangeDetailId != null">
+                and `exchange_detail_id` = #{exchangeDetailId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from integral where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from integral where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,11 @@
+[
+  { "key": 1, "display_name": "顺丰快递"} ,
+  { "key": 2, "display_name": "圆通快递"} ,
+  { "key": 3, "display_name": "申通快递"} ,
+  { "key": 4, "display_name": "韵达快递"} ,
+  { "key": 5, "display_name": "中通快递"} ,
+  { "key": 6, "display_name": "德邦快递"} ,
+  { "key": 7, "display_name": "中国邮政"} ,
+  { "key": 8, "display_name": "百世汇通"} ,
+  { "key": 9, "display_name": "京东快递"}
+]

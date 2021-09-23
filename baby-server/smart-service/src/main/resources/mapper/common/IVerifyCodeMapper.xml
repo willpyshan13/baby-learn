@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IVerifyCodeMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="verifyId" parameterType="cn.smart.entity.VerifyCodeDO">
+        insert into verify_code
+        (
+       	    verify_id, code, expire_time, telephone, 
+       	    update_time, create_time
+        )
+        values
+        (
+       	    #{verifyId,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{expireTime,jdbcType=BIGINT}, #{telephone,jdbcType=VARCHAR}, 
+       	    #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.VerifyCodeDO">
+        select
+                verify_id, code, expire_time, telephone, 
+                update_time, create_time
+        from verify_code
+        where verify_id = #{verifyId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.VerifyCodeDO"
+        parameterType="cn.smart.condition.VerifyCodeQueryCondition">
+        select
+       	    verify_id, code, expire_time, telephone, 
+       	    update_time, create_time
+        from verify_code
+        <where>
+            <if test="verifyId != null">
+                and verify_id = #{verifyId,jdbcType=BIGINT}
+            </if>
+            <if test="code != null and code != '' ">
+                and code = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="expireTime != null">
+                and expire_time = #{expireTime,jdbcType=BIGINT}
+            </if>
+            <if test="telephone != null and telephone != '' ">
+                and telephone = #{telephone,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=BIGINT}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by verify_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.VerifyCodeQueryCondition">
+        select count(1) as total from verify_code
+        <where>
+            <if test="verifyId != null">
+                and verify_id = #{verifyId,jdbcType=BIGINT}
+            </if>
+            <if test="code != null and code != '' ">
+                and code = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="expireTime != null">
+                and expire_time = #{expireTime,jdbcType=BIGINT}
+            </if>
+            <if test="telephone != null and telephone != '' ">
+                and telephone = #{telephone,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from verify_code
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.VerifyCodeDO">
+        update verify_code
+        <set>
+            <if test="code != null  ">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="expireTime != null">
+                expire_time = #{expireTime,jdbcType=BIGINT},
+            </if>
+            <if test="telephone != null  ">
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where verify_id = #{verifyId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from verify_code
+        <where>
+            <if test="verifyId != null">
+                and verify_id = #{verifyId,jdbcType=BIGINT}
+            </if>
+            <if test="code != null and code != '' ">
+                and code = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="expireTime != null">
+                and expire_time = #{expireTime,jdbcType=BIGINT}
+            </if>
+            <if test="telephone != null and telephone != '' ">
+                and telephone = #{telephone,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from verify_code where verify_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from verify_code where verify_id = #{verifyId,jdbcType=BIGINT}
+    </delete>
+</mapper>

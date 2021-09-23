@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ISysConfigMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.SysConfigDO">
+        insert into sys_config
+        (
+       	    `id`, `key`, `value`, `status`, 
+       	    `remark`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+       	    #{remark,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.SysConfigDO">
+        select
+                `id`, `key`, `value`, `status`, 
+                `remark`
+        from sys_config
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.SysConfigDO"
+        parameterType="cn.smart.condition.SysConfigQueryCondition">
+        select
+       	    `id`, `key`, `value`, `status`, 
+       	    `remark`
+        from sys_config
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="key != null and key != '' ">
+                and `key` = #{key,jdbcType=VARCHAR}
+            </if>
+            <if test="value != null and value != '' ">
+                and `value` = #{value,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.SysConfigQueryCondition">
+        select count(1) as total from sys_config
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="key != null and key != '' ">
+                and `key` = #{key,jdbcType=VARCHAR}
+            </if>
+            <if test="value != null and value != '' ">
+                and `value` = #{value,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from sys_config
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.SysConfigDO">
+        update sys_config
+        <set>
+            <if test="key != null">
+                `key` = #{key,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                `value` = #{value,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from sys_config
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="key != null and key != '' ">
+                and `key` = #{key,jdbcType=VARCHAR}
+            </if>
+            <if test="value != null and value != '' ">
+                and `value` = #{value,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from sys_config where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from sys_config where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IMachineUpgradeMapper">
+
+    <update id="updateUpgradeBatch" parameterType="cn.smart.entity.MachineUpgradeDO">
+        update machine_upgrade
+        <set>
+            <if test="serialNumber != null">
+                `serial_number` = #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="currentVersion != null">
+                `current_version` = #{currentVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="upgrade != null">
+                `upgrade` = #{upgrade,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id in
+        <foreach item="id" collection="machineIds" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+    </update>
+    <!--UPDATE machine_upgrade set `upgrade` =#{upgrade,jdbcType=INTEGER} where id = #{id}
+    <foreach item="id" collection="machineIds" open="(" separator="," close=")">-->
+    <!--#{id}-->
+    <!--</foreach>-->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.MachineUpgradeDO">
+        insert into machine_upgrade
+        (
+       	    `id`, `serial_number`, `current_version`, `upgrade`, 
+       	    `remark`, `create_time`, `update_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{serialNumber,jdbcType=VARCHAR}, #{currentVersion,jdbcType=VARCHAR}, #{upgrade,jdbcType=INTEGER}, 
+       	    #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.MachineUpgradeDO">
+        select
+                `id`, `serial_number`, `current_version`, `upgrade`, 
+                `remark`, `create_time`, `update_time`
+        from machine_upgrade
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.MachineUpgradeDO"
+        parameterType="cn.smart.condition.MachineUpgradeQueryCondition">
+        select
+       	    `id`, `serial_number`, `current_version`, `upgrade`, 
+       	    `remark`, `create_time`, `update_time`
+        from machine_upgrade
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="serialNumber != null and serialNumber != '' ">
+                and `serial_number` = #{serialNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="currentVersion != null and currentVersion != '' ">
+                and `current_version` = #{currentVersion,jdbcType=VARCHAR}
+            </if>
+            <if test="upgrade != null">
+                and `upgrade` = #{upgrade,jdbcType=INTEGER}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.MachineUpgradeQueryCondition">
+        select count(1) as total from machine_upgrade
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="serialNumber != null and serialNumber != '' ">
+                and `serial_number` = #{serialNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="currentVersion != null and currentVersion != '' ">
+                and `current_version` = #{currentVersion,jdbcType=VARCHAR}
+            </if>
+            <if test="upgrade != null">
+                and `upgrade` = #{upgrade,jdbcType=INTEGER}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from machine_upgrade
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.MachineUpgradeDO">
+        update machine_upgrade
+        <set>
+            <if test="serialNumber != null">
+                `serial_number` = #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="currentVersion != null">
+                `current_version` = #{currentVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="upgrade != null">
+                `upgrade` = #{upgrade,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from machine_upgrade
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="serialNumber != null and serialNumber != '' ">
+                and `serial_number` = #{serialNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="currentVersion != null and currentVersion != '' ">
+                and `current_version` = #{currentVersion,jdbcType=VARCHAR}
+            </if>
+            <if test="upgrade != null">
+                and `upgrade` = #{upgrade,jdbcType=INTEGER}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from machine_upgrade where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from machine_upgrade where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

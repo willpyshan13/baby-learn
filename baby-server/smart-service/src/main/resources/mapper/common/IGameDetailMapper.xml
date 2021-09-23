@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IGameDetailMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.GameDetailDO">
+        insert into game_detail
+        (
+       	    id, game_id, image_url, resource_url, 
+       	    tts_text, word, game_type, right_answer, 
+       	    create_time, update_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{imageUrl,jdbcType=VARCHAR}, #{resourceUrl,jdbcType=VARCHAR}, 
+       	    #{ttsText,jdbcType=VARCHAR}, #{word,jdbcType=VARCHAR}, #{gameType,jdbcType=INTEGER}, #{rightAnswer,jdbcType=TINYINT}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.GameDetailDO">
+        select
+                id, game_id, image_url, resource_url, 
+                tts_text, word, game_type, right_answer, 
+                create_time, update_time
+        from game_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.GameDetailDO"
+        parameterType="cn.smart.condition.GameDetailQueryCondition">
+        select
+       	    id, game_id, image_url, resource_url, 
+       	    tts_text, word, game_type, right_answer, 
+       	    create_time, update_time
+        from game_detail
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="gameId != null">
+                and game_id = #{gameId,jdbcType=BIGINT}
+            </if>
+            <if test="gameIds != null">
+                and game_id in
+                <foreach item="ids" collection="gameIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="resourceUrl != null and resourceUrl != '' ">
+                and resource_url = #{resourceUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="ttsText != null and ttsText != '' ">
+                and tts_text = #{ttsText,jdbcType=VARCHAR}
+            </if>
+            <if test="word != null and word != '' ">
+                and word = #{word,jdbcType=VARCHAR}
+            </if>
+            <if test="gameType != null">
+                and game_type = #{gameType,jdbcType=INTEGER}
+            </if>
+            <if test="rightAnswer != null">
+                and right_answer = #{rightAnswer,jdbcType=TINYINT}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.GameDetailQueryCondition">
+        select count(1) as total from game_detail
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="gameId != null">
+                and game_id = #{gameId,jdbcType=BIGINT}
+            </if>
+            <if test="gameIds != null">
+                and game_id in
+                <foreach item="ids" collection="gameIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="resourceUrl != null and resourceUrl != '' ">
+                and resource_url = #{resourceUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="ttsText != null and ttsText != '' ">
+                and tts_text = #{ttsText,jdbcType=VARCHAR}
+            </if>
+            <if test="word != null and word != '' ">
+                and word = #{word,jdbcType=VARCHAR}
+            </if>
+            <if test="gameType != null">
+                and game_type = #{gameType,jdbcType=INTEGER}
+            </if>
+            <if test="rightAnswer != null">
+                and right_answer = #{rightAnswer,jdbcType=TINYINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from game_detail
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.GameDetailDO">
+        update game_detail
+        <set>
+            <if test="gameId != null">
+                game_id = #{gameId,jdbcType=BIGINT},
+            </if>
+            <if test="imageUrl != null">
+                image_url = #{imageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="resourceUrl != null">
+                resource_url = #{resourceUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="ttsText != null">
+                tts_text = #{ttsText,jdbcType=VARCHAR},
+            </if>
+            <if test="word != null">
+                word = #{word,jdbcType=VARCHAR},
+            </if>
+            <if test="gameType != null">
+                game_type = #{gameType,jdbcType=INTEGER},
+            </if>
+            <if test="rightAnswer != null">
+                right_answer = #{rightAnswer,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from game_detail
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="gameId != null">
+                and game_id = #{gameId,jdbcType=BIGINT}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="resourceUrl != null and resourceUrl != '' ">
+                and resource_url = #{resourceUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="ttsText != null and ttsText != '' ">
+                and tts_text = #{ttsText,jdbcType=VARCHAR}
+            </if>
+            <if test="word != null and word != '' ">
+                and word = #{word,jdbcType=VARCHAR}
+            </if>
+            <if test="gameType != null">
+                and game_type = #{gameType,jdbcType=INTEGER}
+            </if>
+            <if test="rightAnswer != null">
+                and right_answer = #{rightAnswer,jdbcType=TINYINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from game_detail where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from game_detail where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

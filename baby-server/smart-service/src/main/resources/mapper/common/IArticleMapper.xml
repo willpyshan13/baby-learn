@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IArticleMapper">
+
+
+    <select id="queryByTags" resultType="cn.smart.entity.ArticleDO"
+            parameterType="cn.smart.condition.ArticleQueryCondition">
+        SELECT
+            a.`id`, a.`title`, a.`type`, a.`description`, a.`image_url`, a.`send_time`,
+            a.`author`, a.`editor`, a.`tags`, a.`keys`, a.`content`, a.`reader_times`,
+            a.`status`, a.`remark`, a.`enable`, a.`create_by`, a.`create_time`, a.`edit_by`,
+            a.`update_time`, at.code_text, at.image_url typeImageUrl, a.`importance`, a.url
+        FROM article a
+            LEFT JOIN article_type at ON at.code = a.type
+        WHERE MATCH (tags) AGAINST ('${tags}' IN BOOLEAN MODE)
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by a.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotalByTags" resultType="int"
+            parameterType="cn.smart.condition.ArticleQueryCondition">
+        SELECT
+          COUNT(*) total
+        FROM article a
+        LEFT JOIN article_type at ON at.code = a.type
+        WHERE MATCH (tags) AGAINST ('${tags}' IN BOOLEAN MODE)
+    </select>
+
+    <select id="queryAllTypeArticle" resultType="cn.smart.entity.ArticleDO"
+            parameterType="cn.smart.condition.ArticleQueryCondition">
+        SELECT
+            a.`id`, a.`title`, a.`type`, a.`description`, a.`image_url`, a.`send_time`,
+            a.`author`, a.`editor`, a.`tags`, a.`keys`, a.`content`, a.`reader_times`,
+            a.`status`, a.`remark`, a.`enable`, a.`create_by`, a.`create_time`, a.`edit_by`,
+            a.`update_time`, at.code_text, at.image_url typeImageUrl, a.`importance`, a.url
+        FROM article a
+        LEFT JOIN article_type at ON at.code = a.type
+        WHERE ( SELECT count( * ) FROM article b WHERE b.type = a.type AND b.id > a.id ) &lt; #{limit}
+        <if test="unequalType != null">
+            and type != #{unequalType}
+        </if>
+        ORDER BY create_time asc,id desc
+    </select>
+
+    <select id="queryArticle" resultType="cn.smart.entity.ArticleDO"
+            parameterType="cn.smart.condition.ArticleQueryCondition">
+        SELECT
+        a.`id`, a.`title`, a.`type`, a.`description`, a.`image_url`, a.`send_time`,
+        a.`author`, a.`editor`, a.`tags`, a.`keys`, a.`content`, a.`reader_times`,
+        a.`status`, a.`remark`, a.`enable`, a.`create_by`, a.`create_time`, a.`edit_by`,
+        a.`update_time`, at.code_text, at.image_url typeImageUrl, a.`importance`, a.url
+        FROM article a
+        LEFT JOIN article_type at ON at.code = a.type
+        WHERE ( SELECT count( * ) FROM article b WHERE b.type = a.type AND b.id > a.id ) &lt; 1
+        ORDER BY create_time asc,id desc
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.ArticleDO">
+        insert into article
+        (
+       	    `id`, `title`, `type`, `description`, 
+       	    `image_url`, `send_time`, `author`, `editor`, 
+       	    `tags`, `keys`, `content`, `reader_times`, 
+       	    `status`, `remark`, `enable`, `create_by`, 
+       	    `create_time`, `edit_by`, `update_time`, `importance`, url
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, 
+       	    #{imageUrl,jdbcType=VARCHAR}, #{sendTime,jdbcType=TIMESTAMP}, #{author,jdbcType=VARCHAR}, #{editor,jdbcType=VARCHAR}, 
+       	    #{tags,jdbcType=VARCHAR}, #{keys,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, #{readerTimes,jdbcType=INTEGER}, 
+       	    #{status,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{enable,jdbcType=TINYINT}, #{createBy,jdbcType=BIGINT}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{editBy,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}, #{importance, jdbcType=DOUBLE},
+            #{url,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.ArticleDO">
+        select
+            a.`id`, a.`title`, a.`type`, a.`description`, a.`image_url`, a.`send_time`,
+            a.`author`, a.`editor`, a.`tags`, a.`keys`, a.`content`, a.`reader_times`,
+            a.`status`, a.`remark`, a.`enable`, a.`create_by`, a.`create_time`, a.`edit_by`,
+            a.`update_time`, at.code_text, at.image_url typeImageUrl, a.`importance`, a.url
+        FROM article a
+        LEFT JOIN article_type at ON at.code = a.type
+        where a.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.ArticleDO"
+        parameterType="cn.smart.condition.ArticleQueryCondition">
+        select
+            a.`id`, a.`title`, a.`type`, a.`description`, a.`image_url`, a.`send_time`,
+            a.`author`, a.`editor`, a.`tags`, a.`keys`, a.`content`, a.`reader_times`,
+            a.`status`, a.`remark`, a.`enable`, a.`create_by`, a.`create_time`, a.`edit_by`,
+            a.`update_time`, at.code_text, at.image_url typeImageUrl, a.`importance`, a.url
+        FROM article a
+        LEFT JOIN article_type at ON at.code = a.type
+        <where>
+            <if test="id != null">
+                and a.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="title != null and title != '' ">
+                and a.`title` LIKE concat('%', '${title}', '%')
+            </if>
+            <if test="type != null">
+                and a.`type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="description != null and description != '' ">
+                and a.`description` = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and a.`image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="sendTime != null">
+                and a.`send_time` = #{sendTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="importance != null">
+                and a.`importance` = #{importance,jdbcType=DOUBLE}
+            </if>
+            <if test="author != null and author != '' ">
+                and a.`author` = #{author,jdbcType=VARCHAR}
+            </if>
+            <if test="editor != null and editor != '' ">
+                and a.`editor` = #{editor,jdbcType=VARCHAR}
+            </if>
+            <if test="tags != null and tags != '' ">
+                and a.`tags` = #{tags,jdbcType=VARCHAR}
+            </if>
+            <if test="keys != null and keys != '' ">
+                and a.`keys` = #{keys,jdbcType=VARCHAR}
+            </if>
+            <if test="content != null and content != '' ">
+                and a.`content` = #{content,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="readerTimes != null">
+                and a.`reader_times` = #{readerTimes,jdbcType=INTEGER}
+            </if>
+            <if test="status != null and status != '' ">
+                and a.`status` = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and a.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="enable != null">
+                and a.`enable` = #{enable,jdbcType=TINYINT}
+            </if>
+            <if test="createBy != null">
+                and a.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and a.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="editBy != null">
+                and a.`edit_by` = #{editBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and a.`update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by a.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.ArticleQueryCondition">
+        select count(1) as total from article a
+        LEFT JOIN article_type at ON at.code = a.type
+        <where>
+            <if test="id != null">
+                and a.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="title != null and title != '' ">
+                and a.`title` LIKE concat('%', '${title}', '%')
+            </if>
+            <if test="type != null">
+                and a.`type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="description != null and description != '' ">
+                and a.`description` = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and a.`image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="sendTime != null">
+                and a.`send_time` = #{sendTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="importance != null">
+                and a.`importance` = #{importance,jdbcType=DOUBLE}
+            </if>
+            <if test="author != null and author != '' ">
+                and a.`author` = #{author,jdbcType=VARCHAR}
+            </if>
+            <if test="editor != null and editor != '' ">
+                and a.`editor` = #{editor,jdbcType=VARCHAR}
+            </if>
+            <if test="tags != null and tags != '' ">
+                and a.`tags` = #{tags,jdbcType=VARCHAR}
+            </if>
+            <if test="keys != null and keys != '' ">
+                and a.`keys` = #{keys,jdbcType=VARCHAR}
+            </if>
+            <if test="content != null and content != '' ">
+                and a.`content` = #{content,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="readerTimes != null">
+                and a.`reader_times` = #{readerTimes,jdbcType=INTEGER}
+            </if>
+            <if test="status != null and status != '' ">
+                and a.`status` = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and a.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="enable != null">
+                and a.`enable` = #{enable,jdbcType=TINYINT}
+            </if>
+            <if test="createBy != null">
+                and a.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="editBy != null">
+                and a.`edit_by` = #{editBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from article
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.ArticleDO">
+        update article
+        <set>
+            <if test="title != null">
+                `title` = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                `description` = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="imageUrl != null">
+                `image_url` = #{imageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                `send_time` = #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="importance != null">
+                `importance` = #{importance,jdbcType=DOUBLE},
+            </if>
+            <if test="author != null">
+                `author` = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="editor != null">
+                `editor` = #{editor,jdbcType=VARCHAR},
+            </if>
+            <if test="tags != null">
+                `tags` = #{tags,jdbcType=VARCHAR},
+            </if>
+            <if test="keys != null">
+                `keys` = #{keys,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                `content` = #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="readerTimes != null">
+                `reader_times` = #{readerTimes,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="enable != null">
+                `enable` = #{enable,jdbcType=TINYINT},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="editBy != null">
+                `edit_by` = #{editBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                `update_time` = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="url != null">
+                `url` = #{url,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from article a
+        <where>
+            <if test="id != null">
+                and a.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="title != null and title != '' ">
+                and a.`title` = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and a.`type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="description != null and description != '' ">
+                and a.`description` = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and a.`image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="author != null and author != '' ">
+                and a.`author` = #{author,jdbcType=VARCHAR}
+            </if>
+            <if test="importance != null">
+                and a.`importance` = #{importance,jdbcType=DOUBLE}
+            </if>
+            <if test="editor != null and editor != '' ">
+                and a.`editor` = #{editor,jdbcType=VARCHAR}
+            </if>
+            <if test="tags != null and tags != '' ">
+                and a.`tags` = #{tags,jdbcType=VARCHAR}
+            </if>
+            <if test="keys != null and keys != '' ">
+                and a.`keys` = #{keys,jdbcType=VARCHAR}
+            </if>
+            <if test="content != null and content != '' ">
+                and a.`content` = #{content,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="readerTimes != null">
+                and a.`reader_times` = #{readerTimes,jdbcType=INTEGER}
+            </if>
+            <if test="status != null and status != '' ">
+                and a.`status` = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and a.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="enable != null">
+                and a.`enable` = #{enable,jdbcType=TINYINT}
+            </if>
+            <if test="createBy != null">
+                and a.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="editBy != null">
+                and a.`edit_by` = #{editBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from article where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from article where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

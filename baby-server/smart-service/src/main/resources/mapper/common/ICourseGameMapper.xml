@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ICourseGameMapper">
+
+    <insert id="insertBatch" parameterType="List">
+        INSERT INTO course_game (course_info_id, game_info_id, create_time) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (#{item.courseInfoId,jdbcType=BIGINT}, #{item.gameInfoId,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.CourseGameDO">
+        insert into course_game
+        (
+       	    id, course_info_id, game_info_id, create_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{courseInfoId,jdbcType=BIGINT}, #{gameInfoId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.CourseGameDO">
+        select
+                id, course_info_id, game_info_id, create_time
+        from course_game
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.CourseGameDO"
+        parameterType="cn.smart.condition.CourseGameQueryCondition">
+        select
+            cg.id, cg.course_info_id, cg.game_info_id, cg.create_time
+        from course_game cg
+        <where>
+            <if test="id != null">
+                and cg.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="deleteGameIds != null">
+                and EXISTS (SELECT game_info_id FROM course_game WHERE id = cg.id and game_info_id in
+                    <foreach item="ids" collection="deleteGameIds" open="(" separator="," close=")">
+                        #{ids}
+                    </foreach>
+                )
+            </if>
+            <if test="courseInfoId != null">
+                and cg.course_info_id = #{courseInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="gameInfoId != null">
+                and cg.game_info_id = #{gameInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and cg.create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by cg.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by cg.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.CourseGameQueryCondition">
+        select count(1) as total from course_game cg
+        <where>
+            <if test="id != null">
+                and cg.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="deleteGameIds != null">
+                and EXISTS (SELECT game_info_id FROM course_game WHERE id = cg.id and game_info_id in
+                <foreach item="ids" collection="deleteGameIds" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+                )
+            </if>
+            <if test="courseInfoId != null">
+                and cg.course_info_id = #{courseInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="gameInfoId != null">
+                and cg.game_info_id = #{gameInfoId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from course_game
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.CourseGameDO">
+        update course_game
+        <set>
+            <if test="courseInfoId != null">
+                course_info_id = #{courseInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="gameInfoId != null">
+                game_info_id = #{gameInfoId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from course_game
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="courseInfoId != null">
+                and course_info_id = #{courseInfoId,jdbcType=BIGINT}
+            </if>
+            <if test="gameInfoId != null">
+                and game_info_id = #{gameInfoId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from course_game where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from course_game where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IVideoMapper">
+
+    <insert id="saveVideoTypeRecord" useGeneratedKeys="true" keyProperty="typeRecordId"  parameterType="cn.smart.entity.VideoTypeRecordDO">
+        INSERT INTO video_type_record (video_id, type_id) VALUES (#{videoId,jdbcType=BIGINT}, #{typeId,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateVideoTypeRecord" parameterType="cn.smart.entity.VideoTypeRecordDO">
+        UPDATE video_type_record
+        <set>
+            <if test="videoId != null">
+                video_id = #{videoId,jdbcType=INTEGER},
+            </if>
+            <if test="typeId != null">
+                type_id = #{typeId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where type_record_id = #{typeRecordId,jdbcType=BIGINT}
+    </update>
+
+
+    <delete id="removeVideoBatch">
+        UPDATE video_url SET video_id = NULL  WHERE video_url_id IN
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <update id="updateVideoIdBatch" parameterType="cn.smart.bo.VideoBO">
+        UPDATE video_url SET video_id = #{id}  WHERE video_url_id IN
+        <foreach item="ids" collection="videoUrlIds" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </update>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="videoId" parameterType="cn.smart.entity.VideoDO">
+        insert into video
+        (
+       	    video_id, create_time, status, update_time, 
+       	    video_actor, video_brief, video_desc, video_director, 
+       	    video_preview_pic_url, video_region, video_script_writer, video_title, 
+       	    video_wheel_pic_url, video_year
+        )
+        values
+        (
+       	    #{videoId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+       	    #{videoActor,jdbcType=VARCHAR}, #{videoBrief,jdbcType=VARCHAR}, #{videoDesc,jdbcType=LONGVARCHAR}, #{videoDirector,jdbcType=VARCHAR}, 
+       	    #{videoPreviewPicUrl,jdbcType=VARCHAR}, #{videoRegion,jdbcType=BIGINT}, #{videoScriptWriter,jdbcType=VARCHAR}, #{videoTitle,jdbcType=VARCHAR}, 
+       	    #{videoWheelPicUrl,jdbcType=VARCHAR}, #{videoYear,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.VideoDO">
+        select
+                video_id, create_time, status, update_time, 
+                video_actor, video_brief, video_desc, video_director, 
+                video_preview_pic_url, video_region, video_script_writer, video_title, 
+                video_wheel_pic_url, video_year
+        from video
+        where video_id = #{videoId,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.VideoDO"
+        parameterType="cn.smart.condition.VideoQueryCondition">
+        select
+       	    v.video_id, v.create_time, v.status, v.update_time,
+            v.video_actor, video_brief, v.video_desc, v.video_director,
+            v.video_preview_pic_url, v.video_region, v.video_script_writer, v.video_title,
+            v.video_wheel_pic_url, v.video_year, vtr.type_record_id, vt.type_id, vt.type_desc
+        from video v
+        LEFT JOIN video_type_record vtr ON vtr.video_id = v.video_id
+        LEFT JOIN video_type vt ON vt.type_id = vtr.type_id
+        <where>
+            <if test="typeId != null">
+                and vtr.type_id = #{typeId, jdbcType=BIGINT}
+            </if>
+            <if test="videoId != null">
+                and v.video_id = #{videoId,jdbcType=BIGINT}
+            </if>
+            <if test="status != null">
+                and v.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="videoActor != null and videoActor != '' ">
+                and v.video_actor = #{videoActor,jdbcType=VARCHAR}
+            </if>
+            <if test="videoBrief != null and videoBrief != '' ">
+                and v.video_brief like CONCAT('%','${videoBrief}','%')
+            </if>
+            <if test="videoDesc != null and videoDesc != '' ">
+                and v.video_desc = #{videoDesc,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="videoDirector != null and videoDirector != '' ">
+                and v.video_director = #{videoDirector,jdbcType=VARCHAR}
+            </if>
+            <if test="videoPreviewPicUrl != null and videoPreviewPicUrl != '' ">
+                and v.video_preview_pic_url = #{videoPreviewPicUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoRegion != null">
+                and v.video_region = #{videoRegion,jdbcType=BIGINT}
+            </if>
+            <if test="videoScriptWriter != null and videoScriptWriter != '' ">
+                and v.video_script_writer = #{videoScriptWriter,jdbcType=VARCHAR}
+            </if>
+            <if test="videoTitle != null and videoTitle != '' ">
+                and v.video_title like CONCAT('%','${videoTitle}','%')
+            </if>
+            <if test="videoWheelPicUrl != null and videoWheelPicUrl != '' ">
+                and v.video_wheel_pic_url = #{videoWheelPicUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoYear != null">
+                and v.video_year = #{videoYear,jdbcType=BIGINT}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by v.video_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.VideoQueryCondition">
+        select count(1) as total from video v
+        LEFT JOIN video_type_record vtr ON vtr.video_id = v.video_id
+        LEFT JOIN video_type vt ON vt.type_id = vtr.type_id
+        <where>
+            <if test="typeId != null">
+                and vtr.type_id = #{typeId, jdbcType=BIGINT}
+            </if>
+            <if test="videoId != null">
+                and v.video_id = #{videoId,jdbcType=BIGINT}
+            </if>
+            <if test="status != null">
+                and v.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="videoActor != null and videoActor != '' ">
+                and v.video_actor = #{videoActor,jdbcType=VARCHAR}
+            </if>
+            <if test="videoBrief != null and videoBrief != '' ">
+                and v.video_brief like CONCAT('%','${videoBrief}','%')
+            </if>
+            <if test="videoDesc != null and videoDesc != '' ">
+                and v.video_desc = #{videoDesc,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="videoDirector != null and videoDirector != '' ">
+                and v.video_director = #{videoDirector,jdbcType=VARCHAR}
+            </if>
+            <if test="videoPreviewPicUrl != null and videoPreviewPicUrl != '' ">
+                and v.video_preview_pic_url = #{videoPreviewPicUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoRegion != null">
+                and v.video_region = #{videoRegion,jdbcType=BIGINT}
+            </if>
+            <if test="videoScriptWriter != null and videoScriptWriter != '' ">
+                and v.video_script_writer = #{videoScriptWriter,jdbcType=VARCHAR}
+            </if>
+            <if test="videoTitle != null and videoTitle != '' ">
+                and v.video_title like CONCAT('%','${videoTitle}','%')
+            </if>
+            <if test="videoWheelPicUrl != null and videoWheelPicUrl != '' ">
+                and v.video_wheel_pic_url = #{videoWheelPicUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoYear != null">
+                and v.video_year = #{videoYear,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from video
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.VideoDO">
+        update video
+        <set>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="videoActor != null">
+                video_actor = #{videoActor,jdbcType=VARCHAR},
+            </if>
+            <if test="videoBrief != null">
+                video_brief = #{videoBrief,jdbcType=VARCHAR},
+            </if>
+            <if test="videoDesc != null">
+                video_desc = #{videoDesc,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="videoDirector != null">
+                video_director = #{videoDirector,jdbcType=VARCHAR},
+            </if>
+            <if test="videoPreviewPicUrl != null">
+                video_preview_pic_url = #{videoPreviewPicUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="videoRegion != null">
+                video_region = #{videoRegion,jdbcType=BIGINT},
+            </if>
+            <if test="videoScriptWriter != null">
+                video_script_writer = #{videoScriptWriter,jdbcType=VARCHAR},
+            </if>
+            <if test="videoTitle != null">
+                video_title = #{videoTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="videoWheelPicUrl != null">
+                video_wheel_pic_url = #{videoWheelPicUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="videoYear != null">
+                video_year = #{videoYear,jdbcType=BIGINT}
+            </if>
+        </set>
+        where video_id = #{videoId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from video
+        <where>
+            <if test="videoId != null">
+                and video_id = #{videoId,jdbcType=BIGINT}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="videoActor != null and videoActor != '' ">
+                and video_actor = #{videoActor,jdbcType=VARCHAR}
+            </if>
+            <if test="videoBrief != null and videoBrief != '' ">
+                and video_brief = #{videoBrief,jdbcType=VARCHAR}
+            </if>
+            <if test="videoDesc != null and videoDesc != '' ">
+                and video_desc = #{videoDesc,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="videoDirector != null and videoDirector != '' ">
+                and video_director = #{videoDirector,jdbcType=VARCHAR}
+            </if>
+            <if test="videoPreviewPicUrl != null and videoPreviewPicUrl != '' ">
+                and video_preview_pic_url = #{videoPreviewPicUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoRegion != null">
+                and video_region = #{videoRegion,jdbcType=BIGINT}
+            </if>
+            <if test="videoScriptWriter != null and videoScriptWriter != '' ">
+                and video_script_writer = #{videoScriptWriter,jdbcType=VARCHAR}
+            </if>
+            <if test="videoTitle != null and videoTitle != '' ">
+                and video_title = #{videoTitle,jdbcType=VARCHAR}
+            </if>
+            <if test="videoWheelPicUrl != null and videoWheelPicUrl != '' ">
+                and video_wheel_pic_url = #{videoWheelPicUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="videoYear != null">
+                and video_year = #{videoYear,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from video where video_id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from video where video_id = #{videoId,jdbcType=BIGINT}
+    </delete>
+</mapper>

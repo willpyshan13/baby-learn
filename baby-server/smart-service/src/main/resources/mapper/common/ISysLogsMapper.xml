@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ISysLogsMapper">
+
+
+    <insert id="saveApiLog" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.SysLogsDO">
+        insert into api_logs
+        (
+        `id`, `title`, `request_url`, `method`,
+        `parameters`, `client_host`, `user_agent`, `result`,
+        `remark`, `create_by`, `create_time`, `update_by`,
+        `update_time`
+        )
+        values
+        (
+        #{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{requestUrl,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR},
+        #{parameters,jdbcType=VARCHAR}, #{clientHost,jdbcType=VARCHAR}, #{userAgent,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR},
+        #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=BIGINT},
+        #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryApiLogList" resultType="cn.smart.entity.SysLogsDO"
+            parameterType="cn.smart.condition.SysLogsQueryCondition">
+        select
+            al.`id`, al.`title`, al.`request_url`, al.`method`,
+            al.`parameters`, al.`client_host`, al.`user_agent`, al.`result`,
+            al.`remark`, al.`create_by`, al.`create_time`, al.`update_by`,
+            al.`update_time`, p.user_name, p.mobile_number mobile_phone
+        from api_logs al
+        LEFT JOIN person p ON p.person_id = al.create_by
+        <where>
+            <if test="id != null">
+                and al.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="title != null and title != '' ">
+                and al.`title` = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="requestUrl != null and requestUrl != '' ">
+                and al.`request_url` = #{requestUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="method != null and method != '' ">
+                and al.`method` = #{method,jdbcType=VARCHAR}
+            </if>
+            <if test="parameters != null and parameters != '' ">
+                and al.`parameters` = #{parameters,jdbcType=VARCHAR}
+            </if>
+            <if test="clientHost != null and clientHost != '' ">
+                and al.`client_host` = #{clientHost,jdbcType=VARCHAR}
+            </if>
+            <if test="userAgent != null and userAgent != '' ">
+                and al.`user_agent` = #{userAgent,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and al.`result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and al.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and al.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and al.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and al.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and al.`update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="searchKeys != null and searchKeys != ''">
+                and (
+                al.title like CONCAT('%','${searchKeys}','%')
+                or p.user_name like CONCAT('%','${searchKeys}','%')
+                or p.mobile_number like CONCAT('%','${searchKeys}','%')
+                )
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by al.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="countApiLog" resultType="int"
+            parameterType="cn.smart.condition.SysLogsQueryCondition">
+        select count(1) as total from api_logs al
+        LEFT JOIN person p ON p.person_id = al.create_by
+        <where>
+            <if test="id != null">
+                and al.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="title != null and title != '' ">
+                and al.`title` = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="requestUrl != null and requestUrl != '' ">
+                and al.`request_url` = #{requestUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="method != null and method != '' ">
+                and al.`method` = #{method,jdbcType=VARCHAR}
+            </if>
+            <if test="parameters != null and parameters != '' ">
+                and al.`parameters` = #{parameters,jdbcType=VARCHAR}
+            </if>
+            <if test="clientHost != null and clientHost != '' ">
+                and al.`client_host` = #{clientHost,jdbcType=VARCHAR}
+            </if>
+            <if test="userAgent != null and userAgent != '' ">
+                and al.`user_agent` = #{userAgent,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and al.`result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and al.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and al.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and al.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="searchKeys != null and searchKeys != ''">
+                and (
+                al.title like CONCAT('%','${searchKeys}','%')
+                or p.user_name like CONCAT('%','${searchKeys}','%')
+                or p.mobile_number like CONCAT('%','${searchKeys}','%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <update id="updateApiLog" parameterType="cn.smart.entity.SysLogsDO">
+        update api_logs
+        <set>
+            <if test="title != null">
+                `title` = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="requestUrl != null">
+                `request_url` = #{requestUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="method != null">
+                `method` = #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="parameters != null">
+                `parameters` = #{parameters,jdbcType=VARCHAR},
+            </if>
+            <if test="clientHost != null">
+                `client_host` = #{clientHost,jdbcType=VARCHAR},
+            </if>
+            <if test="userAgent != null">
+                `user_agent` = #{userAgent,jdbcType=VARCHAR},
+            </if>
+            <if test="result != null">
+                `result` = #{result,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.SysLogsDO">
+        insert into sys_logs
+        (
+       	    `id`, `title`, `request_url`, `method`, 
+       	    `parameters`, `client_host`, `user_agent`, `result`, 
+       	    `remark`, `create_by`, `create_time`, `update_by`, 
+       	    `update_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{requestUrl,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
+       	    #{parameters,jdbcType=VARCHAR}, #{clientHost,jdbcType=VARCHAR}, #{userAgent,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, 
+       	    #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=BIGINT}, 
+       	    #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Integer" resultType="cn.smart.entity.SysLogsDO">
+        select
+                `id`, `title`, `request_url`, `method`, 
+                `parameters`, `client_host`, `user_agent`, `result`, 
+                `remark`, `create_by`, `create_time`, `update_by`, 
+                `update_time`
+        from sys_logs
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.SysLogsDO"
+        parameterType="cn.smart.condition.SysLogsQueryCondition">
+        select
+       	    sl.`id`, sl.`title`, sl.`request_url`, sl.`method`,
+            sl.`parameters`, sl.`client_host`, sl.`user_agent`, sl.`result`,
+            sl.`remark`, sl.`create_by`, sl.`create_time`, sl.`update_by`,
+            sl.`update_time`, su.user_name, su.mobile mobile_phone
+        from sys_logs sl
+        LEFT JOIN sys_user su ON su.user_id = sl.create_by
+        <where>
+            <if test="id != null">
+                and sl.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="title != null and title != '' ">
+                and sl.`title` = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="requestUrl != null and requestUrl != '' ">
+                and sl.`request_url` = #{requestUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="method != null and method != '' ">
+                and sl.`method` = #{method,jdbcType=VARCHAR}
+            </if>
+            <if test="parameters != null and parameters != '' ">
+                and sl.`parameters` = #{parameters,jdbcType=VARCHAR}
+            </if>
+            <if test="clientHost != null and clientHost != '' ">
+                and sl.`client_host` = #{clientHost,jdbcType=VARCHAR}
+            </if>
+            <if test="userAgent != null and userAgent != '' ">
+                and sl.`user_agent` = #{userAgent,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and sl.`result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and sl.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and sl.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and sl.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and sl.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and sl.`update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="searchKeys != null and searchKeys != ''">
+                and (
+                sl.title like CONCAT('%','${searchKeys}','%')
+                or su.user_name like CONCAT('%','${searchKeys}','%')
+                # or result like CONCAT('%','${searchKeys}','%')
+                )
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.SysLogsQueryCondition">
+        select count(1) as total from sys_logs sl
+        LEFT JOIN sys_user su ON su.user_id = sl.create_by
+        <where>
+            <if test="id != null">
+                and sl.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="title != null and title != '' ">
+                and sl.`title` = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="requestUrl != null and requestUrl != '' ">
+                and sl.`request_url` = #{requestUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="method != null and method != '' ">
+                and sl.`method` = #{method,jdbcType=VARCHAR}
+            </if>
+            <if test="parameters != null and parameters != '' ">
+                and sl.`parameters` = #{parameters,jdbcType=VARCHAR}
+            </if>
+            <if test="clientHost != null and clientHost != '' ">
+                and sl.`client_host` = #{clientHost,jdbcType=VARCHAR}
+            </if>
+            <if test="userAgent != null and userAgent != '' ">
+                and sl.`user_agent` = #{userAgent,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and sl.`result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and sl.`remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and sl.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and sl.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="searchKeys != null and searchKeys != ''">
+                and (
+                sl.title like CONCAT('%','${searchKeys}','%')
+                or su.user_name like CONCAT('%','${searchKeys}','%')
+                # or result like CONCAT('%','${searchKeys}','%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from sys_logs
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.SysLogsDO">
+        update sys_logs
+        <set>
+            <if test="title != null">
+                `title` = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="requestUrl != null">
+                `request_url` = #{requestUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="method != null">
+                `method` = #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="parameters != null">
+                `parameters` = #{parameters,jdbcType=VARCHAR},
+            </if>
+            <if test="clientHost != null">
+                `client_host` = #{clientHost,jdbcType=VARCHAR},
+            </if>
+            <if test="userAgent != null">
+                `user_agent` = #{userAgent,jdbcType=VARCHAR},
+            </if>
+            <if test="result != null">
+                `result` = #{result,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                `remark` = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="delete">
+        delete from sys_logs
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="title != null and title != '' ">
+                and `title` = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="requestUrl != null and requestUrl != '' ">
+                and `request_url` = #{requestUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="method != null and method != '' ">
+                and `method` = #{method,jdbcType=VARCHAR}
+            </if>
+            <if test="parameters != null and parameters != '' ">
+                and `parameters` = #{parameters,jdbcType=VARCHAR}
+            </if>
+            <if test="clientHost != null and clientHost != '' ">
+                and `client_host` = #{clientHost,jdbcType=VARCHAR}
+            </if>
+            <if test="userAgent != null and userAgent != '' ">
+                and `user_agent` = #{userAgent,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and `result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != '' ">
+                and `remark` = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from sys_logs where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Integer">
+        delete from sys_logs where id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

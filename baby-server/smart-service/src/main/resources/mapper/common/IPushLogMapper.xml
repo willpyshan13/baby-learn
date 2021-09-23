@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IPushLogMapper">
+
+
+    <select id="queryPersonMessage" parameterType="cn.smart.condition.PushLogQueryCondition"
+            resultType="cn.smart.entity.PushLogDO">
+        select
+            pl.`id`, pl.`push_tag`, pl.`push_alias`, pl.`push_type`,
+            pl.`push_msg`, pl.`result`, pl.`create_time`, pl.`person_id`,
+            pl.`room_id`, pl.push_data, pl.push_title
+        from push_log pl
+        WHERE pl.push_type IN (4)
+        <if test="personId != null">
+            and pl.`person_id` = #{personId,jdbcType=BIGINT}
+        </if>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by pl.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotalPersonMessage" parameterType="cn.smart.condition.PushLogQueryCondition"
+            resultType="int">
+        select
+          count(*) total
+        from push_log pl
+        <where>
+            <if test="personId != null">
+                and pl.`person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.PushLogDO">
+        insert into push_log
+        (
+       	    `id`, `push_tag`, `push_alias`, `push_type`,
+       	    `push_msg`, `result`, `create_time`, `person_id`, 
+       	    `room_id`, `push_data`, push_title
+        )
+        values
+        (
+       	    #{id,jdbcType=INTEGER}, #{pushTag,jdbcType=VARCHAR}, #{pushAlias,jdbcType=VARCHAR}, #{pushType,jdbcType=INTEGER}, 
+       	    #{pushMsg,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{personId,jdbcType=BIGINT}, 
+       	    #{roomId,jdbcType=BIGINT}, #{pushData,jdbcType=VARCHAR}, #{pushTitle,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Integer" resultType="cn.smart.entity.PushLogDO">
+        select
+            pl.`id`, pl.`push_tag`, pl.`push_alias`, pl.`push_type`,
+            pl.`push_msg`, pl.`result`, pl.`create_time`, pl.`person_id`, (SELECT p.mobile_number FROM person p WHERE p.person_id = pl.person_id) mobile_number,
+            pl.`room_id`, (SELECT room_name FROM room r WHERE r.id = pl.room_id) room_name, pl.push_data, push_title
+        from push_log pl
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.PushLogDO"
+        parameterType="cn.smart.condition.PushLogQueryCondition">
+        select
+            pl.`id`, pl.`push_tag`, pl.`push_alias`, pl.`push_type`,
+            pl.`push_msg`, pl.`result`, pl.`create_time`, pl.`person_id`, p.mobile_number,
+            pl.`room_id`, r.room_name, pl.push_data, pl.push_title
+        from push_log pl
+        LEFT JOIN person p ON p.person_id = pl.person_id
+        LEFT JOIN room r ON r.id = pl.room_id
+        <where>
+            <if test="id != null">
+                and pl.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="pushTag != null and pushTag != '' ">
+                and pl.`push_tag` = #{pushTag,jdbcType=VARCHAR}
+            </if>
+            <if test="pushAlias != null and pushAlias != '' ">
+                and pl.`push_alias` = #{pushAlias,jdbcType=VARCHAR}
+            </if>
+            <if test="pushType != null">
+                and pl.`push_type` = #{pushType,jdbcType=INTEGER}
+            </if>
+            <if test="pushMsg != null and pushMsg != '' ">
+                and pl.`push_msg` = #{pushMsg,jdbcType=VARCHAR}
+            </if>
+            <if test="pushTitle != null and pushTitle != '' ">
+                and pl.`push_title` = #{pushTitle,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and pl.`result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and pl.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="personId != null">
+                and pl.`person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="roomId != null">
+                and pl.`room_id` = #{roomId,jdbcType=BIGINT}
+            </if>
+            <if test="keyWord != null">
+                and p.mobile_number LIKE concat('%', '${keyWord}', '%')
+                or r.room_name LIKE concat('%', '${keyWord}', '%')
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by pl.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.PushLogQueryCondition">
+        select count(1) as total  from push_log pl
+        LEFT JOIN person p ON p.person_id = pl.person_id
+        LEFT JOIN room r ON r.id = pl.room_id
+        <where>
+            <if test="id != null">
+                and pl.`id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="pushTag != null and pushTag != '' ">
+                and pl.`push_tag` = #{pushTag,jdbcType=VARCHAR}
+            </if>
+            <if test="pushAlias != null and pushAlias != '' ">
+                and pl.`push_alias` = #{pushAlias,jdbcType=VARCHAR}
+            </if>
+            <if test="pushType != null">
+                and pl.`push_type` = #{pushType,jdbcType=INTEGER}
+            </if>
+            <if test="pushMsg != null and pushMsg != '' ">
+                and pl.`push_msg` = #{pushMsg,jdbcType=VARCHAR}
+            </if>
+            <if test="pushTitle != null and pushTitle != '' ">
+                and pl.`push_title` = #{pushTitle,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and pl.`result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and pl.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="personId != null">
+                and pl.`person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="roomId != null">
+                and pl.`room_id` = #{roomId,jdbcType=BIGINT}
+            </if>
+            <if test="keyWord != null">
+                and p.mobile_number LIKE concat('%', '${keyWord}', '%')
+                or r.room_name LIKE concat('%', '${keyWord}', '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from push_log
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.PushLogDO">
+        update push_log
+        <set>
+            <if test="pushTag != null">
+                `push_tag` = #{pushTag,jdbcType=VARCHAR},
+            </if>
+            <if test="pushAlias != null">
+                `push_alias` = #{pushAlias,jdbcType=VARCHAR},
+            </if>
+            <if test="pushType != null">
+                `push_type` = #{pushType,jdbcType=INTEGER},
+            </if>
+            <if test="pushMsg != null">
+                `push_msg` = #{pushMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="pushTitle != null">
+                `push_title` = #{pushTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="pushData != null">
+                `push_data` = #{pushData,jdbcType=VARCHAR},
+            </if>
+            <if test="result != null">
+                `result` = #{result,jdbcType=VARCHAR},
+            </if>
+            <if test="personId != null">
+                `person_id` = #{personId,jdbcType=BIGINT},
+            </if>
+            <if test="roomId != null">
+                `room_id` = #{roomId,jdbcType=BIGINT}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="delete">
+        delete from push_log
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="pushTag != null and pushTag != '' ">
+                and `push_tag` = #{pushTag,jdbcType=VARCHAR}
+            </if>
+            <if test="pushAlias != null and pushAlias != '' ">
+                and `push_alias` = #{pushAlias,jdbcType=VARCHAR}
+            </if>
+            <if test="pushType != null">
+                and `push_type` = #{pushType,jdbcType=INTEGER}
+            </if>
+            <if test="pushMsg != null and pushMsg != '' ">
+                and `push_msg` = #{pushMsg,jdbcType=VARCHAR}
+            </if>
+            <if test="result != null and result != '' ">
+                and `result` = #{result,jdbcType=VARCHAR}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="roomId != null">
+                and `room_id` = #{roomId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from push_log where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Integer">
+        delete from push_log where id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

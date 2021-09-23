@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IGoodsMapper">
+
+    <select id="queryGoodsWithStageGroup" parameterType="cn.smart.condition.GoodsQueryCondition"
+            resultType="cn.smart.entity.GoodsDO">
+        SELECT g.id, g.name, g.price, g.image_url, g.virtual, csgg.exchange_points, csgg.id group_goods_id
+        FROM goods g
+        LEFT JOIN course_stage_group_goods csgg ON csgg.goods_id = g.id
+        <where>
+            <if test="id != null">
+                and g.id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and g.`name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="stageId != null">
+                and csgg.`stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and csgg.`group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by g.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="countGoodsWithStageGroup" parameterType="cn.smart.condition.GoodsQueryCondition"
+            resultType="int">
+        SELECT count(*) total
+        FROM goods g
+        LEFT JOIN course_stage_group_goods csgg ON csgg.goods_id = g.id
+        <where>
+            <if test="id != null">
+                and g.id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and g.`name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="stageId != null">
+                and csgg.`stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and csgg.`group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.GoodsDO">
+        insert into goods
+        (
+       	    `id`, `name`, `virtual`, `price`, 
+       	    `points`, `image_url`, `card_image_url`, `create_by`, 
+       	    `create_time`, `update_by`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{virtual,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, 
+       	    #{points,jdbcType=INTEGER}, #{imageUrl,jdbcType=VARCHAR}, #{cardImageUrl,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.GoodsDO">
+        select
+                `id`, `name`, `virtual`, `price`, 
+                `points`, `image_url`, `card_image_url`, `create_by`, 
+                `create_time`, `update_by`
+        from goods
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.GoodsDO"
+        parameterType="cn.smart.condition.GoodsQueryCondition">
+        select
+       	    `id`, `name`, `virtual`, `price`, 
+       	    `points`, `image_url`, `card_image_url`, `create_by`, 
+       	    `create_time`, `update_by`
+        from goods
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="virtual != null">
+                and `virtual` = #{virtual,jdbcType=INTEGER}
+            </if>
+            <if test="price != null">
+                and `price` = #{price,jdbcType=DECIMAL}
+            </if>
+            <if test="points != null">
+                and `points` = #{points,jdbcType=INTEGER}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and `image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="cardImageUrl != null and cardImageUrl != '' ">
+                and `card_image_url` = #{cardImageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null and createBy != '' ">
+                and `create_by` = #{createBy,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.GoodsQueryCondition">
+        select count(1) as total from goods
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="virtual != null">
+                and `virtual` = #{virtual,jdbcType=INTEGER}
+            </if>
+            <if test="price != null">
+                and `price` = #{price,jdbcType=DECIMAL}
+            </if>
+            <if test="points != null">
+                and `points` = #{points,jdbcType=INTEGER}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and `image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="cardImageUrl != null and cardImageUrl != '' ">
+                and `card_image_url` = #{cardImageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null and createBy != '' ">
+                and `create_by` = #{createBy,jdbcType=VARCHAR}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from goods
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.GoodsDO">
+        update goods
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="virtual != null">
+                `virtual` = #{virtual,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                `price` = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="points != null">
+                `points` = #{points,jdbcType=INTEGER},
+            </if>
+            <if test="imageUrl != null">
+                `image_url` = #{imageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cardImageUrl != null">
+                `card_image_url` = #{cardImageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.GoodsDO">
+        update goods SET
+            `name` = #{name,jdbcType=VARCHAR},
+            `virtual` = #{virtual,jdbcType=INTEGER},
+            `price` = #{price,jdbcType=DECIMAL},
+            `points` = #{points,jdbcType=INTEGER},
+            `image_url` = #{imageUrl,jdbcType=VARCHAR},
+            `card_image_url` = #{cardImageUrl,jdbcType=VARCHAR},
+            `create_by` = #{createBy,jdbcType=VARCHAR},
+            `update_by` = #{updateBy,jdbcType=TIMESTAMP}
+        where `id` = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from goods
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="name != null and name != '' ">
+                and `name` = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="virtual != null">
+                and `virtual` = #{virtual,jdbcType=INTEGER}
+            </if>
+            <if test="price != null">
+                and `price` = #{price,jdbcType=DECIMAL}
+            </if>
+            <if test="points != null">
+                and `points` = #{points,jdbcType=INTEGER}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and `image_url` = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="cardImageUrl != null and cardImageUrl != '' ">
+                and `card_image_url` = #{cardImageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null and createBy != '' ">
+                and `create_by` = #{createBy,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from goods where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from goods where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

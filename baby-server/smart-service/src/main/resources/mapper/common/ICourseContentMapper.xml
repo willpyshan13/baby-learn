@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.ICourseContentMapper">
+
+    <select id="queryContentByCourseIds" resultType="cn.smart.entity.CourseContentDO">
+        SELECT
+        a.id, a.category, a.video_url, a.image_url,
+        a.type, a.duration, a.tts_text, a.word, a.create_time,
+        b.course_info_id
+        FROM
+        course_content a
+        LEFT JOIN (
+        SELECT
+        a.course_content_id,a.course_info_id
+        FROM
+        `course_content_relevance` a
+        WHERE
+        a.course_info_id IN
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+        ) b ON a.id = b.course_content_id
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.CourseContentDO">
+        insert into course_content
+        (
+       	    id, category, video_url, image_url, 
+       	    type, duration, tts_text, word, 
+       	    create_time, update_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{category,jdbcType=VARCHAR}, #{videoUrl,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR}, 
+       	    #{type,jdbcType=INTEGER}, #{duration,jdbcType=BIGINT}, #{ttsText,jdbcType=VARCHAR}, #{word,jdbcType=VARCHAR}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.CourseContentDO">
+        select
+                id, category, video_url, image_url, 
+                type, duration, tts_text, word, 
+                create_time, update_time
+        from course_content
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.CourseContentDO"
+        parameterType="cn.smart.condition.CourseContentQueryCondition">
+        select
+       	    id, category, video_url, image_url, 
+       	    type, duration, tts_text, word, 
+       	    create_time, update_time
+        from course_content
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="category != null and category != '' ">
+                and category = #{category,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrl != null and videoUrl != '' ">
+                and video_url = #{videoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="duration != null">
+                and duration = #{duration,jdbcType=BIGINT}
+            </if>
+            <if test="ttsText != null and ttsText != '' ">
+                and tts_text = #{ttsText,jdbcType=VARCHAR}
+            </if>
+            <if test="word != null and word != '' ">
+                and word = #{word,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.CourseContentQueryCondition">
+        select count(1) as total from course_content
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="category != null and category != '' ">
+                and category = #{category,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrl != null and videoUrl != '' ">
+                and video_url = #{videoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="duration != null">
+                and duration = #{duration,jdbcType=BIGINT}
+            </if>
+            <if test="ttsText != null and ttsText != '' ">
+                and tts_text = #{ttsText,jdbcType=VARCHAR}
+            </if>
+            <if test="word != null and word != '' ">
+                and word = #{word,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from course_content
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.CourseContentDO">
+        update course_content
+        <set>
+            <if test="category != null  ">
+                category = #{category,jdbcType=VARCHAR},
+            </if>
+            <if test="videoUrl != null ">
+                video_url = #{videoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="imageUrl != null ">
+                image_url = #{imageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="duration != null">
+                duration = #{duration,jdbcType=BIGINT},
+            </if>
+            <if test="ttsText != null">
+                tts_text = #{ttsText,jdbcType=VARCHAR},
+            </if>
+            <if test="word != null">
+                word = #{word,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from course_content
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="category != null and category != '' ">
+                and category = #{category,jdbcType=VARCHAR}
+            </if>
+            <if test="videoUrl != null and videoUrl != '' ">
+                and video_url = #{videoUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="imageUrl != null and imageUrl != '' ">
+                and image_url = #{imageUrl,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="duration != null">
+                and duration = #{duration,jdbcType=BIGINT}
+            </if>
+            <if test="ttsText != null and ttsText != '' ">
+                and tts_text = #{ttsText,jdbcType=VARCHAR}
+            </if>
+            <if test="word != null and word != '' ">
+                and word = #{word,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from course_content where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from course_content where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

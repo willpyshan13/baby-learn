@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IRoomCoursewareMapper">
+
+    <insert id="saveBatch" parameterType="List">
+        INSERT INTO room_courseware (room_id, courseware_id, create_time) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (#{item.roomId,jdbcType=BIGINT}, #{item.coursewareId,jdbcType=BIGINT}, now())
+        </foreach>
+    </insert>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.RoomCoursewareDO">
+        insert into room_courseware
+        (
+       	    id, room_id, courseware_id, create_time, 
+       	    update_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, #{coursewareId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+       	    #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.RoomCoursewareDO">
+        select
+                id, room_id, courseware_id, create_time, 
+                update_time
+        from room_courseware
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.RoomCoursewareDO"
+        parameterType="cn.smart.condition.RoomCoursewareQueryCondition">
+        select
+       	    id, room_id, courseware_id, create_time, 
+       	    update_time
+        from room_courseware
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="roomId != null">
+                and room_id = #{roomId,jdbcType=BIGINT}
+            </if>
+            <if test="coursewareId != null">
+                and courseware_id = #{coursewareId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.RoomCoursewareQueryCondition">
+        select count(1) as total from room_courseware
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="roomId != null">
+                and room_id = #{roomId,jdbcType=BIGINT}
+            </if>
+            <if test="coursewareId != null">
+                and courseware_id = #{coursewareId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from room_courseware
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.RoomCoursewareDO">
+        update room_courseware
+        <set>
+            <if test="roomId != null">
+                room_id = #{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="coursewareId != null">
+                courseware_id = #{coursewareId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from room_courseware
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="roomId != null">
+                and room_id = #{roomId,jdbcType=BIGINT}
+            </if>
+            <if test="coursewareId != null">
+                and courseware_id = #{coursewareId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from room_courseware where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from room_courseware where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

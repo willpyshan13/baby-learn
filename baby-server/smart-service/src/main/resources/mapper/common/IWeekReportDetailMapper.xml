@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IWeekReportDetailMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.WeekReportDetailDO">
+        insert into week_report_detail
+        (
+       	    `id`, `week_report_id`, `chart_data`, `type`, 
+       	    `better`, `poor`, `create_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{weekReportId,jdbcType=BIGINT}, #{chartData,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+       	    #{better,jdbcType=VARCHAR}, #{poor,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.WeekReportDetailDO">
+        select
+                `id`, `week_report_id`, `chart_data`, `type`, 
+                `better`, `poor`, `create_time`
+        from week_report_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.WeekReportDetailDO"
+        parameterType="cn.smart.condition.WeekReportDetailQueryCondition">
+        select
+       	    `id`, `week_report_id`, `chart_data`, `type`, 
+       	    `better`, `poor`, `create_time`
+        from week_report_detail
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="weekReportId != null">
+                and `week_report_id` = #{weekReportId,jdbcType=BIGINT}
+            </if>
+            <if test="chartData != null and chartData != '' ">
+                and `chart_data` = #{chartData,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="better != null and better != '' ">
+                and `better` = #{better,jdbcType=VARCHAR}
+            </if>
+            <if test="poor != null and poor != '' ">
+                and `poor` = #{poor,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and `create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.WeekReportDetailQueryCondition">
+        select count(1) as total from week_report_detail
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="weekReportId != null">
+                and `week_report_id` = #{weekReportId,jdbcType=BIGINT}
+            </if>
+            <if test="chartData != null and chartData != '' ">
+                and `chart_data` = #{chartData,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="better != null and better != '' ">
+                and `better` = #{better,jdbcType=VARCHAR}
+            </if>
+            <if test="poor != null and poor != '' ">
+                and `poor` = #{poor,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from week_report_detail
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.WeekReportDetailDO">
+        update week_report_detail
+        <set>
+            <if test="weekReportId != null">
+                `week_report_id` = #{weekReportId,jdbcType=BIGINT},
+            </if>
+            <if test="chartData != null">
+                `chart_data` = #{chartData,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="better != null">
+                `better` = #{better,jdbcType=VARCHAR},
+            </if>
+            <if test="poor != null">
+                `poor` = #{poor,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from week_report_detail
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="weekReportId != null">
+                and `week_report_id` = #{weekReportId,jdbcType=BIGINT}
+            </if>
+            <if test="chartData != null and chartData != '' ">
+                and `chart_data` = #{chartData,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="better != null and better != '' ">
+                and `better` = #{better,jdbcType=VARCHAR}
+            </if>
+            <if test="poor != null and poor != '' ">
+                and `poor` = #{poor,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from week_report_detail where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from week_report_detail where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

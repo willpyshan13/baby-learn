@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IClassInfoMapper">
+
+
+    <select id="queryAllClassPerson" parameterType="cn.smart.condition.ClassInfoQueryCondition"
+        resultType="cn.smart.entity.ClassInfoDO">
+        SELECT
+            ci.id,
+            ci.class_name,
+            cp.person_id,
+            ci.open_course_id,
+            ci.course_stage_id,
+            DATE_FORMAT(cc.update_time, '%Y-%m-%d') open_time
+        FROM
+            class_info ci
+        LEFT JOIN class_person cp ON cp.class_id = ci.id
+        LEFT JOIN class_course cc ON cc.course_info_id = ci.open_course_id AND cc.class_id = ci.id
+        <where>
+            <if test="personId != null">
+                and cp.person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="id != null and id != '' ">
+                and ci.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="courseStageId != null">
+                and ci.course_stage_id = #{courseStageId, jdbcType=BIGINT}
+            </if>
+            <if test="openTime != null">
+                and DATE_FORMAT(cc.update_time, '%Y-%m-%d') = #{openTime, jdbcType=VARCHAR}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by ci.id desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="queryClassPersonByClassId" parameterType="cn.smart.condition.PersonQueryCondition"
+            resultType="cn.smart.entity.PersonDO">
+        SELECT
+            p.person_id, p.gender,
+            p.mobile_number, p.nick_name,
+            p.user_name, p.accumulated_points, p.photo_url
+        FROM class_person cp
+        LEFT JOIN person p ON p.person_id = cp.person_id
+        <where>
+            <if test="classId != null">
+                and cp.class_id = #{classId, jdbcType=BIGINT}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and p.user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and p.mobile_number like CONCAT('%','${mobileNumber}','%')
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by cp.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by p.person_id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="countClassPerson" parameterType="cn.smart.condition.PersonQueryCondition"
+            resultType="int">
+        SELECT
+          count(*) total
+        FROM class_person cp
+        LEFT JOIN person p ON p.person_id = cp.person_id
+        <where>
+            <if test="classId != null">
+                and cp.class_id = #{classId, jdbcType=BIGINT}
+            </if>
+
+            <if test="userName != null and userName != '' ">
+                and p.user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobileNumber != null and mobileNumber != '' ">
+                and p.mobile_number like CONCAT('%','${mobileNumber}','%')
+            </if>
+        </where>
+    </select>
+
+    <select id="queryClassCourseByClassId" parameterType="cn.smart.condition.CourseInfoQueryCondition"
+            resultType="cn.smart.bo.ClassCourseBO">
+        SELECT
+            ci.id, ci.course_name, ci.description, ci.stage_id, cs.stage_name,
+            ci.status, ci.type, ci.start_time,
+            ci.end_time, ci.duration, ci.serial_number, ci.viewing_authority,
+            ci.category, ci.video_url,
+            ci.image_url, ci.tts_text, ci.word, cc.id classCourseId, cc.status opened
+        FROM class_course cc
+        LEFT JOIN course_info ci ON cc.course_info_id = ci.id
+        LEFT JOIN course_stage cs ON cs.id = ci.stage_id
+        <where>
+            <if test="classId != null">
+                cc.class_id = #{classId, jdbcType=BIGINT}
+            </if>
+            <if test="courseName != null and courseName != '' ">
+                and ci.course_name = #{courseName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ci.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by ci.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="countClassCourse" parameterType="cn.smart.condition.CourseInfoQueryCondition"
+            resultType="int">
+        SELECT
+          count(*) total
+        FROM class_course cc
+        LEFT JOIN class_info ci ON cc.course_info_id = ci.id
+        LEFT JOIN course_stage cs ON cs.id = ci.course_stage_id
+        <where>
+            <if test="classId != null">
+                cc.class_id = #{classId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryClassCoursePerson" resultType="cn.smart.entity.ClassPersonDO"
+            parameterType="cn.smart.condition.ClassPersonQueryCondition">
+        SELECT
+            cc.class_id,
+            cc.course_info_id course_id,
+            cp.person_id
+        FROM
+            `class_course` cc
+            LEFT JOIN class_person cp ON cc.class_id = cp.class_id
+        <where>
+            <if test="personId != null">
+                and cp.person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="courseId != null and courseId != '' ">
+                and cc.course_info_id = #{courseId,jdbcType=BIGINT}
+            </if>
+            <if test="classId != null and classId != '' ">
+                and cc.class_id = #{classId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.ClassInfoDO">
+        insert into class_info
+        (
+       	    id, class_info, class_name, create_time, 
+       	    status, count, course_stage_id, teacher_id, 
+       	    update_time, push_tag, header_teacher, open_course_id,
+            person_ids, type, remark, one_to_many
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{classInfo,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+       	    #{status,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}, #{courseStageId,jdbcType=BIGINT}, #{teacherId,jdbcType=BIGINT}, 
+       	    #{updateTime,jdbcType=TIMESTAMP}, #{pushTag, jdbcType=VARCHAR}, #{headerTeacher,jdbcType=BIGINT},
+            #{openCourseId,jdbcType=BIGINT}, #{personIds,jdbcType=BIGINT}, #{type,jdbcType=INTEGER},
+            #{remark, jdbcType=VARCHAR}, #{oneToMany, jdbcType=TINYINT}
+        )
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.ClassInfoDO">
+        insert into class_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `id`,
+            </if>
+            <if test="classInfo != null">
+                `class_info`,
+            </if>
+            <if test="className != null">
+                `class_name`,
+            </if>
+            <if test="createTime != null">
+                `create_time`,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="count != null">
+                `count`,
+            </if>
+            <if test="courseStageId != null">
+                `course_stage_id`,
+            </if>
+            <if test="pushTag != null">
+                `push_tag`,
+            </if>
+            <if test="teacherId != null">
+                `teacher_id`,
+            </if>
+            <if test="headerTeacher != null">
+                `header_teacher`,
+            </if>
+            <if test="openCourseId != null">
+                `open_course_id`,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="personIds != null">
+                `person_ids`,
+            </if>
+            <if test="oneToMany != null">
+                `one_to_many`,
+            </if>
+            <if test="remark != null">
+                `remark`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="classInfo != null">
+                #{classInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="className != null">
+                #{className,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=INTEGER},
+            </if>
+            <if test="courseStageId != null">
+                #{courseStageId,jdbcType=BIGINT},
+            </if>
+            <if test="pushTag != null">
+                #{pushTag,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherId != null">
+                #{teacherId,jdbcType=BIGINT},
+            </if>
+            <if test="headerTeacher != null">
+                #{headerTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="openCourseId != null">
+                #{openCourseId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="personIds != null">
+                #{personIds,jdbcType=VARCHAR},
+            </if>
+            <if test="oneToMany != null">
+                #{oneToMany,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.ClassInfoDO">
+        select
+            ci.id, ci.class_info, ci.class_name, ci.create_time,
+            ci.status, (SELECT count(*) FROM class_person WHERE class_id = ci.id) count, ci.course_stage_id, ci.teacher_id,
+            ci.update_time, t.first_name teacher_name, cs.stage_name, ci.push_tag, ci.header_teacher, ci.person_ids,
+            ci.open_course_id, ci.type, ci.one_to_many, ci.remark
+        from class_info ci
+        LEFT JOIN teacher t ON t.teacher_id = ci.teacher_id
+        LEFT JOIN course_stage cs ON cs.id = ci.course_stage_id
+        where ci.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.ClassInfoDO"
+        parameterType="cn.smart.condition.ClassInfoQueryCondition">
+        select
+            ci.id, ci.class_info, ci.class_name, ci.create_time,
+            ci.status, (SELECT count(*) FROM class_person WHERE class_id = ci.id) count, ci.course_stage_id, ci.teacher_id,
+            ci.update_time, t.teacher_name, cs.stage_name, ci.push_tag, ci.header_teacher,
+            ci.open_course_id, ci.person_ids, cci.course_name, tt.teacher_name header_teacher_name, ci.type,
+            ci.one_to_many, ci.remark
+        from class_info ci
+        LEFT JOIN teacher t ON t.teacher_id = ci.teacher_id
+        LEFT JOIN teacher tt ON tt.teacher_id = ci.header_teacher and tt.role = 2
+        LEFT JOIN course_stage cs ON cs.id = ci.course_stage_id
+        LEFT JOIN course_info cci ON cci.id = ci.open_course_id
+        <where>
+            <if test="id != null">
+                and ci.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="classInfo != null and classInfo != '' ">
+                and ci.class_info = #{classInfo,jdbcType=VARCHAR}
+            </if>
+            <if test="className != null and className != '' ">
+                and ci.class_name like concat('%','${className}','%')
+            </if>
+            <if test="createTime != null">
+                and ci.create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="status != null">
+                and ci.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="count != null">
+                and ci.count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="courseStageId != null">
+                and ci.course_stage_id = #{courseStageId,jdbcType=BIGINT}
+            </if>
+            <if test="teacherId != null">
+                and ci.teacher_id = #{teacherId,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and ci.update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="headerTeacher != null">
+                and ci.header_teacher = #{headerTeacher,jdbcType=BIGINT}
+            </if>
+            <if test="existPersonId != null">
+                and find_in_set(#{existPersonId,jdbcType=BIGINT}, ci.person_ids) > 0
+            </if>
+            <if test="type != null">
+                and ci.type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="oneToMany != null">
+                and ci.one_to_many = #{oneToMany,jdbcType=TINYINT}
+            </if>
+            <if test="remark != null">
+                and ci.remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ci.${orderField} ${order}
+            </when>
+            <otherwise>
+                order by ci.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.ClassInfoQueryCondition">
+        select count(1) as total from class_info ci
+        <where>
+            <if test="id != null">
+                and ci.id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="classInfo != null and classInfo != '' ">
+                and ci.class_info = #{classInfo,jdbcType=VARCHAR}
+            </if>
+            <if test="className != null and className != '' ">
+                and ci.class_name = #{className,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and ci.status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="count != null">
+                and ci.count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="courseStageId != null">
+                and ci.course_stage_id = #{courseStageId,jdbcType=BIGINT}
+            </if>
+            <if test="teacherId != null">
+                and ci.teacher_id = #{teacherId,jdbcType=BIGINT}
+            </if>
+            <if test="headerTeacher != null">
+                and ci.header_teacher = #{headerTeacher,jdbcType=BIGINT}
+            </if>
+            <if test="existPersonId != null">
+                and find_in_set(#{existPersonId,jdbcType=BIGINT}, ci.person_ids) > 0
+            </if>
+            <if test="type != null">
+                and ci.type = #{type,jdbcType=INTEGER}
+            </if>
+            <if test="oneToMany != null">
+                and ci.one_to_many = #{oneToMany,jdbcType=TINYINT}
+            </if>
+            <if test="remark != null">
+                and ci.remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from class_info
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.ClassInfoDO">
+        update class_info
+        <set>
+            <if test="classInfo != null">
+                class_info = #{classInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="className != null">
+                class_name = #{className,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="count != null">
+                count = #{count,jdbcType=INTEGER},
+            </if>
+            <if test="courseStageId != null">
+                course_stage_id = #{courseStageId,jdbcType=BIGINT},
+            </if>
+            <if test="teacherId != null">
+                teacher_id = #{teacherId,jdbcType=BIGINT},
+            </if>
+            <if test="pushTag != null">
+                push_tag = #{pushTag, jdbcType=VARCHAR},
+            </if>
+            <if test="headerTeacher != null">
+                header_teacher = #{headerTeacher,jdbcType=BIGINT},
+            </if>
+            <if test="openCourseId != null">
+                open_course_id = #{openCourseId,jdbcType=BIGINT},
+            </if>
+            <if test="personIds != null">
+                person_ids = #{personIds,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="oneToMany != null">
+                one_to_many = #{oneToMany,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.ClassInfoDO">
+        UPDATE  class_info
+        SET
+            class_info = #{classInfo,jdbcType=VARCHAR},
+            class_name = #{className,jdbcType=VARCHAR},
+            status = #{status,jdbcType=INTEGER},
+            count = #{count,jdbcType=INTEGER},
+            course_stage_id = #{courseStageId,jdbcType=BIGINT},
+            teacher_id = #{teacherId,jdbcType=BIGINT},
+            push_tag = #{pushTag, jdbcType=VARCHAR},
+            header_teacher = #{headerTeacher,jdbcType=BIGINT},
+            open_course_id = #{openCourseId,jdbcType=BIGINT},
+            person_ids = #{personIds,jdbcType=BIGINT},
+            type = #{type,jdbcType=INTEGER},
+            one_to_many = #{oneToMany,jdbcType=INTEGER},
+            remark = #{remark,jdbcType=INTEGER}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from class_info
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="classInfo != null and classInfo != '' ">
+                and class_info = #{classInfo,jdbcType=VARCHAR}
+            </if>
+            <if test="className != null and className != '' ">
+                and class_name = #{className,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="count != null">
+                and count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="courseStageId != null">
+                and course_stage_id = #{courseStageId,jdbcType=BIGINT}
+            </if>
+            <if test="teacherId != null">
+                and teacher_id = #{teacherId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from class_info where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from class_info where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

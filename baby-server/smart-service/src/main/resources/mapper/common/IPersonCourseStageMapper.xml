@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IPersonCourseStageMapper">
+
+
+    <select id="queryCourseStagePersonBought" parameterType="cn.smart.condition.PersonCourseStageQueryCondition"
+            resultType="cn.smart.bo.CourseStageInfoBO">
+        SELECT
+            cs.id,
+            cs.stage_name,
+            cs.spend_time,
+            cs.course_count,
+            cs.teacher_id,
+            cs.LEVEL,
+            cs.img_url,
+            t.teacher_name,
+            t_ci.class_name,
+            tt.teacher_name header_teacher_name,
+            tt.wx_qr_code
+        FROM
+            `person_course_stage` pcs
+            LEFT JOIN course_stage cs ON pcs.course_stage_id = cs.id
+            LEFT JOIN (SELECT ci.course_stage_id, ci.class_name, ci.header_teacher FROM class_person cp LEFT JOIN class_info ci ON ci.id = cp.class_id WHERE cp.person_id = #{personId, jdbcType=BIGINT} ) t_ci ON cs.id = t_ci.course_stage_id
+            LEFT JOIN teacher t ON t.teacher_id = cs.teacher_id
+            LEFT JOIN  teacher tt ON tt.teacher_id = t_ci.header_teacher and tt.role = 2
+        WHERE
+            pcs.person_id = #{personId, jdbcType=BIGINT}
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by pcs.create_time desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="countCourseStagePersonBought" parameterType="cn.smart.condition.PersonCourseStageQueryCondition"
+            resultType="int">
+        SELECT
+           count(*)
+        FROM
+            `person_course_stage` pcs
+            LEFT JOIN course_stage cs ON pcs.course_stage_id = cs.id
+            LEFT JOIN (SELECT ci.course_stage_id, ci.class_name FROM class_person cp LEFT JOIN class_info ci ON ci.id = cp.class_id WHERE cp.person_id = #{personId, jdbcType=BIGINT} ) t_ci ON cs.id = t_ci.course_stage_id
+            LEFT JOIN teacher t ON t.teacher_id = cs.teacher_id
+        WHERE
+            pcs.person_id = #{personId, jdbcType=BIGINT}
+    </select>
+
+
+    <select id="queryPersonBoughtCourse" parameterType="Long" resultType="cn.smart.entity.CourseStageDO">
+        SELECT cs.id, cs.stage_name, cs.description, cs.spend_time,
+        cs.course_count, cs.origin_price, cs.preferential_price, cs.sold_count,
+        cs.teacher_id, cs.create_time, cs.level, cs.img_url
+        FROM `person_course_stage` pcs LEFT JOIN course_stage cs ON pcs.course_stage_id = cs.id
+        where pcs.person_id = #{id, jdbcType=BIGINT};
+    </select>
+
+    <select id="queryPersonBoughtCourseTotal" parameterType="Long" resultType="int">
+        SELECT count(pcs.id)
+        FROM `person_course_stage` pcs LEFT JOIN course_stage cs ON pcs.course_stage_id = cs.id
+        where pcs.person_id = #{id, jdbcType=BIGINT};
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.PersonCourseStageDO">
+        insert into person_course_stage
+        (
+       	    id, person_id, course_stage_id, order_id, 
+       	    create_time, update_time
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{personId,jdbcType=BIGINT}, #{courseStageId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
+       	    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.PersonCourseStageDO">
+        select
+                id, person_id, course_stage_id, order_id, 
+                create_time, update_time
+        from person_course_stage
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.PersonCourseStageDO"
+        parameterType="cn.smart.condition.PersonCourseStageQueryCondition">
+        select
+       	    id, person_id, course_stage_id, order_id, 
+       	    create_time, update_time
+        from person_course_stage
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="courseStageId != null">
+                and course_stage_id = #{courseStageId,jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.PersonCourseStageQueryCondition">
+        select count(1) as total from person_course_stage
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="courseStageId != null">
+                and course_stage_id = #{courseStageId,jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from person_course_stage
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.PersonCourseStageDO">
+        update person_course_stage
+        <set>
+            <if test="personId != null">
+                person_id = #{personId,jdbcType=BIGINT},
+            </if>
+            <if test="courseStageId != null">
+                course_stage_id = #{courseStageId,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from person_course_stage
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and person_id = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="courseStageId != null">
+                and course_stage_id = #{courseStageId,jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from person_course_stage where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from person_course_stage where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <util:properties id="wxProperties" location="classpath:/wx.properties"/>
+    <util:properties id="schedulerProperties" location="classpath:/scheduler.properties"/>
+
+
+    <bean id="propertyConfigure"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:**/*.properties"/>
+    </bean>
+
+
+    <context:component-scan base-package="cn.smart">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <import resource="classpath:spring/scheduler.xml"/>
+
+    <import resource="applicationContext-shiro.xml"/>
+
+    <import resource="applicationContext-mybatis.xml"/>
+
+    <import resource="applicationContext-threadpool.xml"/>
+
+    <!-- 注册 Job -->
+    <!--<bean id="messageJob" class="cn.smart.support.scheduler.job.MessageJob"/>-->
+
+</beans>

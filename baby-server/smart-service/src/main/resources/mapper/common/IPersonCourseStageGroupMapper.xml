@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smart.dao.IPersonCourseStageGroupMapper">
+
+    <insert id="saveBatch" parameterType="List">
+        INSERT INTO person_course_stage_group
+        (
+          `stage_id`, `group_id`, `person_id`,
+          `current_points`, `create_by`, `create_time`
+        ) VALUES
+        <foreach collection="list" item="item" index="index" open="" separator="," close="">
+            (
+            #{item.stageId,jdbcType=BIGINT}, #{item.groupId,jdbcType=BIGINT}, #{item.personId,jdbcType=BIGINT},
+            #{item.currentPoints,jdbcType=INTEGER}, #{item.createBy,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="cn.smart.entity.PersonCourseStageGroupDO">
+        insert into person_course_stage_group
+        (
+       	    `id`, `stage_id`, `group_id`, `person_id`, 
+       	    `current_points`, `create_by`, `create_time`, `update_by`, 
+       	    `update_time`
+        )
+        values
+        (
+       	    #{id,jdbcType=BIGINT}, #{stageId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, #{personId,jdbcType=BIGINT}, 
+       	    #{currentPoints,jdbcType=INTEGER}, #{createBy,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=BIGINT}, 
+       	    #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="queryById" parameterType="Long" resultType="cn.smart.entity.PersonCourseStageGroupDO">
+        select
+                `id`, `stage_id`, `group_id`, `person_id`, 
+                `current_points`, `create_by`, `create_time`, `update_by`, 
+                `update_time`
+        from person_course_stage_group
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="queryList" resultType="cn.smart.entity.PersonCourseStageGroupDO"
+        parameterType="cn.smart.condition.PersonCourseStageGroupQueryCondition">
+        select
+            pcsg.`id`, pcsg.`stage_id`, pcsg.`group_id`, pcsg.`person_id`,
+            pcsg.`current_points`, pcsg.`create_by`, pcsg.`create_time`, pcsg.`update_by`,
+            pcsg.`update_time`, csg.code group_code
+        from person_course_stage_group pcsg
+        LEFT JOIN course_stage_group csg ON pcsg.group_id = csg.id
+        <where>
+            <if test="id != null">
+                and pcsg.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="stageId != null">
+                and pcsg.`stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and pcsg.`group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+            <if test="groupCode != null">
+                and csg.`code` = #{groupCode,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and pcsg.`person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="currentPoints != null">
+                and pcsg.`current_points` = #{currentPoints,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and pcsg.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null">
+                and pcsg.`create_time` = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateBy != null">
+                and pcsg.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and pcsg.`update_time` = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        <choose>
+            <when test="orderField != null and orderField.trim() != ''">
+                order by ${orderField} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and offset >= 0 and limit != null and limit gt 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int"
+        parameterType="cn.smart.condition.PersonCourseStageGroupQueryCondition">
+        select count(1) as total from person_course_stage_group
+        <where>
+            <if test="id != null">
+                and pcsg.`id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="stageId != null">
+                and pcsg.`stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and pcsg.`group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and pcsg.`person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="currentPoints != null">
+                and pcsg.`current_points` = #{currentPoints,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and pcsg.`create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and pcsg.`update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+
+    <select id="total" resultType="int">
+        select count(1) as total from person_course_stage_group
+    </select>
+
+    <update id="update" parameterType="cn.smart.entity.PersonCourseStageGroupDO">
+        update person_course_stage_group
+        <set>
+            <if test="stageId != null">
+                `stage_id` = #{stageId,jdbcType=BIGINT},
+            </if>
+            <if test="groupId != null">
+                `group_id` = #{groupId,jdbcType=BIGINT},
+            </if>
+            <if test="personId != null">
+                `person_id` = #{personId,jdbcType=BIGINT},
+            </if>
+            <if test="currentPoints != null">
+                `current_points` = #{currentPoints,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                `create_by` = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateAll" parameterType="cn.smart.entity.PersonCourseStageGroupDO">
+        update person_course_stage_group SET
+            `stage_id` = #{stageId,jdbcType=BIGINT},
+            `group_id` = #{groupId,jdbcType=BIGINT},
+            `person_id` = #{personId,jdbcType=BIGINT},
+            `current_points` = #{currentPoints,jdbcType=INTEGER},
+            `create_by` = #{createBy,jdbcType=BIGINT},
+            `update_by` = #{updateBy,jdbcType=BIGINT}
+        where`id` = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from person_course_stage_group
+        <where>
+            <if test="id != null">
+                and `id` = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="stageId != null">
+                and `stage_id` = #{stageId,jdbcType=BIGINT}
+            </if>
+            <if test="groupId != null">
+                and `group_id` = #{groupId,jdbcType=BIGINT}
+            </if>
+            <if test="personId != null">
+                and `person_id` = #{personId,jdbcType=BIGINT}
+            </if>
+            <if test="currentPoints != null">
+                and `current_points` = #{currentPoints,jdbcType=INTEGER}
+            </if>
+            <if test="createBy != null">
+                and `create_by` = #{createBy,jdbcType=BIGINT}
+            </if>
+            <if test="updateBy != null">
+                and `update_by` = #{updateBy,jdbcType=BIGINT}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from person_course_stage_group where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+        #{ids}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteById" parameterType="Long">
+        delete from person_course_stage_group where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>
